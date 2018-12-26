@@ -72,7 +72,7 @@ INSTALLED_APPS = [
 
     'sorl.thumbnail',
     'sorl_thumbnail_serializer',
-    'messenger_app',
+    'telegram_board',
     'users',
 ]
 
@@ -95,11 +95,11 @@ ROOT_URLCONF = 'csesa.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'DIRS': [
-        #     BASE_DIR,
-        #     os.path.join(BASE_DIR, 'templates'),  # If i leave both or just comment one one out I still get the same error
-        #     'tmws.tmws.templates'
-        # ],
+        'DIRS': [
+            BASE_DIR,
+            os.path.join(BASE_DIR, 'templates'),  # If i leave both or just comment one one out I still get the same error
+            'tmws.tmws.templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
