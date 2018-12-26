@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="ui segment right aligned" style="max-width: 400px; margin: auto">
+
+        {% if message %}
+            <div class="ui positive message">
+              <i class="close icon"></i>
+              <p>
+                  {{ message }}
+              </p>
+            </div>
+        {% endif %}
+
+        <div class="ui top attached tabular menu">
+          <a class="item active" data-tab="first">متن</a>
+          <a class="item" data-tab="second">فایل</a>
+          <a class="item" data-tab="third">عکس</a>
+        </div>
+        <div class="ui bottom attached tab segment center aligned active" data-tab="first">
+            <form class="ui form" method='post' enctype='multipart/form-data'>
+                {% csrf_token %}
+                <textarea required cols='20' style='text-align:right;' name='message'
+                placeholder="متن پیام"></textarea>
+                <button class="ui positive button" style="margin: 10px;" type='submit'>ارسال</button>
+            </form>
+        </div>
+        <div class="ui bottom attached tab segment center aligned" data-tab="second">
+            <form class="ui form" method='post' enctype='multipart/form-data'>
+                {% csrf_token %}
+                <textarea cols='20' style='text-align:right;' name='file_caption'
+                placeholder="متن همراه فایل"></textarea>
+                <input type='file' name='file' />
+                <button class="ui positive button" style="margin: 10px;" type='submit'>ارسال</button>
+            </form>
+        </div>
+        <div class="ui bottom attached tab segment center aligned" data-tab="third">
+            <form class="ui form" method='post' enctype='multipart/form-data'>
+                {% csrf_token %}
+                <textarea cols='20' style='text-align:right;' name='image_caption'
+                placeholder="متن همراه عکس"></textarea>
+                <input type='file' name='image' />
+                <button class="ui positive button" style="margin: 10px;" type='submit'>ارسال</button>
+            </form>
+        </div>
+
+        <a href="{% url 'users:logout' %}">خروج</a>
+    </div>
+{% endblock content %}
