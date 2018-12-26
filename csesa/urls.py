@@ -18,8 +18,8 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 
-from cse_messages import settings
-from cse_messages.bot_utils import bot_loop
+from csesa import settings
+from csesa.bot_utils import bot_loop
 
 urlpatterns = [
   path('admin/', admin.site.urls),

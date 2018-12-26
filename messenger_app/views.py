@@ -8,8 +8,8 @@ from django.urls import reverse
 from django.views import View
 
 # Create your views here.
-from cse_messages.settings import SEND_TO_CHAT_ID
-from cse_messages.bot_utils import bot
+from csesa.settings import SEND_TO_CHAT_ID
+from csesa.bot_utils import bot
 
 
 class send_message(View):
