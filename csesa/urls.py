@@ -23,8 +23,8 @@ from csesa.bot_utils import bot_loop
 
 urlpatterns = [
   path('admin/', admin.site.urls),
-  path('users/', include('users.urls', namespace='users')),
-  path('messages/', include('telegram_board.urls', namespace='telegram_board')),
+  path('user/', include('users.urls', namespace='users')),
+  path('board/', include('telegram_board.urls', namespace='telegram_board')),
 ]
 
 
