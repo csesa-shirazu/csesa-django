@@ -28,7 +28,7 @@ def login_view(request):
         login(request, user)
         if next:
             return redirect(next)
-        return redirect(reverse('telegram_board:send'))
+        return redirect(reverse('telegramboard:send'))
 
     context = {}
     context["form"] = form
