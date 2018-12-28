@@ -20,8 +20,8 @@ class CSECourseGroup(models.Model):
 
 
 class CSETerm(models.Model):
-    start = models.DateTimeField()
-    end = models.DateTimeField()
+    start = models.DateField()
+    end = models.DateField()
 
 
 class CSECourseGroupTerm(models.Model):
