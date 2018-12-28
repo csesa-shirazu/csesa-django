@@ -27,3 +27,4 @@ class CSETerm(models.Model):
 class CSECourseGroupTerm(models.Model):
     course_group = models.ForeignKey(to=CSECourse, on_delete=models.CASCADE)
     term = models.ForeignKey(to=CSETerm, on_delete=models.PROTECT)
+

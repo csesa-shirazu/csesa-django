@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     'sorl_thumbnail_serializer',
     'telegramboard',
     'csecourses',
+    'campaigns',
+    'qualification',
     'users',
 ]
 

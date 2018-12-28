@@ -20,7 +20,7 @@ class CampaignType(Enum):
 
 
 class Campaign(models.Model):
-    course_data = models.ForeignKey(to="CSECourseGroupTerm",
+    course_data = models.ForeignKey(to="csecourses.CSECourseGroupTerm",
                                     on_delete=models.CASCADE,
                                     blank=True,
                                     null=True)
