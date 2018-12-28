@@ -15,6 +15,7 @@ class QuestionType(Enum):
 class Question(models.Model):
     body = models.TextField()
     type = EnumField(QuestionType, max_length = 1000)
+    coeff = models.IntegerField(default=1)
 
 class QA(models.Model):
     qualification = models.ForeignKey(to=Qualification, on_delete=models.CASCADE, related_name="answers")
