@@ -1,3 +1,6 @@
+#Some secret data :)
+olddata.json
+
 #######Django#######
 #gunicorn
 web.sock
