@@ -45,10 +45,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-BOT_API_URL = "http://localhost:5000"
-
-HOST_URL = "http://localhost:8000"
-
 
 TELEGRAM_BOT_TOKEN = ""
 SEND_TO_CHAT_ID = ""
@@ -73,6 +69,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'sorl_thumbnail_serializer',
     'telegramboard',
+    'csecourses',
     'users',
 ]
 
