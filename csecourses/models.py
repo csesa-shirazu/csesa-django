@@ -13,7 +13,7 @@ class CSECourse(models.Model):
 
 class CSECourseGroup(models.Model):
     course = models.ForeignKey(to=CSECourse, on_delete=models.CASCADE)
-    group = models.IntegerField()
+    group = models.IntegerField(default=1)
 
     def __str__(self):
         return str(self.course)
@@ -23,8 +23,11 @@ class CSETerm(models.Model):
     start = models.DateField()
     end = models.DateField()
 
+    def __str__(self):
+        return str(self.start) + " | " + str(self.end)
+
 
 class CSECourseGroupTerm(models.Model):
-    course_group = models.ForeignKey(to=CSECourse, on_delete=models.CASCADE)
+    course_group = models.ForeignKey(to=CSECourseGroup, on_delete=models.CASCADE)
     term = models.ForeignKey(to=CSETerm, on_delete=models.PROTECT)
 
