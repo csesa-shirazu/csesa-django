@@ -58,6 +58,8 @@ class Campaign(models.Model):
     def name(self):
         if self.title:
             return self.title
+        elif self.course_data:
+            return str(self.course_data)
         return ""
 
     def __str__(self):
