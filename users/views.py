@@ -18,23 +18,22 @@ import imaplib
 
 def login_view(request):
     next = request.GET.get('next')
-    # title = "Login"
-    title = "ورود"
+    context = {}
     form = UserLoginForm(request.POST or None)
     if form.is_valid():
         username = form.cleaned_data.get("username")
         password = form.cleaned_data.get('password')
         user = authenticate(username=username, password=password)
         login(request, user)
+    elif request.POST: # Data is submitted and invalid
+            context['error'] = True
+
+    if request.user.is_authenticated:
         if next:
             return redirect(next)
-        return redirect(reverse('telegramboard:send'))
+        return redirect(reverse('qualification:cse_gradery'))
 
-    context = {}
-    context["form"] = form
-    context["title"] = title
-
-    return render(request, "default_form.html", context)
+    return render(request, "login.html", context)
 
 
 def logout_view(request):

@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <style>
+        table th {
+            font-weight: 500 !important;
+        }
+        table tbody tr td .ui.checkbox input[type=radio] {
+            opacity: 1 !important;
+        }
+        table tbody tr td:first-child {
+            text-align: right !important;
+        }
+        p.last {
+            margin-top: 10px;
+            text-align: center;
+        }
+        p.last img {
+            display: inline;
+            width: 20px;
+            height: 20px;
+            margin-bottom: -6px;
+            margin-left: 3.13px;
+            margin-right: 3.13px;
+        }
+        .logos {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .logos .logo {
+            display: inline-block;
+            margin: 0 8.5px;
+        }
+        .logos .logo img {
+            width: 69px;
+            height: 69px;
+        }
+        .logos .logo p {
+            font-weight: 400;
+            font-size: 13px;
+        }
+        form#logout {
+            position: absolute;
+            top: 20px;
+        }
+        h1.header {
+            margin-bottom: 0 !important;
+        }
+        .warning.message {
+            display: block !important;
+        }
+        .info.row p {
+            direction: rtl;
+            text-align: right !important;
+        }
+    </style>
+{% endblock styles %}
+
+{% block scripts %}
+
+    <script type="text/javascript">
+        loge('Page View', {
+            Page: 'Index',
+            UserId: {{ request.user.id }}
+        });
+    </script>
+
+    <script>
+        var app = new Vue({
+            el: '#vapp',
+            data: {
+                courses: {!! json_encode(Auth::user()->courses()) !!},
+                graders: [],
+                isLoading: false,
+                cid: -1,
+                gid: -1
+            },
+            methods: {
+                changeGrader: function(event) {
+
+                    this.isLoading = true;
+
+                    $.get('api/graders?course_id=' + event.target.value, function(data) {
+                        app.graders = data;
+                        app.gid = -1;
+                        app.isLoading = false;
+                    });
+
+                },
+                signClicked: function() {
+                    loge('Sign Clicked');
+                }
+            },
+            computed: {
+                canSend: function () {
+                    return this.gid != -1 && this.cid != -1;
+                }
+            }
+        });
+    </script>
+
+{% endblock scripts %}
+
+{% block content %}
+
+    <div class="ui container" id="vapp">
+
+        <br> <div class="hide on mobile hard"> <br> <br> <br> </div>
+
+        <div class="ui top attached inverted raised padded violet segment">
+            <h1 class="ui large centered header">نظرسنجی گریدری</h1>
+            <form action="/logout" id="logout" method="post">
+                {!! csrf_field() !!}
+                <button type="submit" class="ui small black labeld icon button is-font-light">
+                    <i class="sign out icon"></i>
+                    خروج
+                </button>
+            </form>
+        </div>
+
+        <div class="ui attached padded raised segment" :class="{loading: isLoading}">
+            <form action="/vote" method="POST" class="ui rtl form">
+                {!! csrf_field() !!}
+                <div class="ui centered grid">
+
+                    <div class="ui hidden divider"></div>
+
+                    @if (Request::has('status'))
+                    <div class="row">
+                        @if (Request::input('status') == 'new')
+                        <div class="ten wide column">
+                            <div class="ui icon rtl positive message">
+                                <i class="check icon"></i>
+                                <div class="content">
+                                    <div class="header">
+                                        رای شما ثبت شد
+                                    </div>
+                                    <p>از وقتی که گذاشید متشکریم :)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                            loge('Vote', {
+                                Status: 'New'
+                            });
+                        </script>
+
+                        @elseif (Request::input('status') == 'modified')
+                        <div class="ten wide column">
+                            <div class="ui icon rtl warning message">
+                                <i class="warning icon"></i>
+                                <div class="content">
+                                    <div class="header">
+                                        رای شما تغییر کرد
+                                    </div>
+                                    <p>رای شما جایگزین رای قبلی شد</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                            loge('Vote', {
+                                Status: 'Modified'
+                            });
+                        </script>
+
+                        @else
+                        <div class="ten wide column">
+                            <div class="ui icon rtl negative message">
+                                <i class="remove icon"></i>
+                                <div class="content">
+                                    <div class="header">
+                                        رای شما ثبت نشد
+                                    </div>
+                                    <p>لطفا به همه سوالات رای دهید</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                            loge('Vote', {
+                                Status: 'Fail'
+                            });
+                        </script>
+
+                        @endif
+                    </div>
+                    @endif
+
+                    <div class="info row">
+                        <div class="nine wide column">
+                            <p>شما در این قسمت، گریدرهای خود را ارزیابی می کنید :)
+                            <br>برای تک تک گریدرهای خود، جداگانه فرم را پرکرده و ثبت کنید.
+                            </p>
+                            <p>لطفا فیلد <b>یادداشت</b> را فراموش نکنید.<br>یادداشت های شما درباره ی گریدر ها، ما را سریع تر به هدف ارتقاء وضعیت گریدری ها نزدیک می کند.<br>همچنین هرگونه انتقاد یا پیشنهادی را به واسطه ی این فیلد، یا <a href="mailto:csesa@cse.shirazu.ac.ir">ایمیل</a> و یا <a href="https://telegram.me/csesa_contact">تلگرام</a> به ما منتقل کنید.</p>
+                        </div>
+                    </div>
+
+                    <div class="row is-rtl">
+                        <div class="five wide column">
+                            <div class="field">
+                                <label for="course">درس های شما</label>
+                                <div class="rtl">
+                                    <select @change="changeGrader" class="ui rtl" name="course_id" v-model="cid">
+                                        <option value="-1">انتخاب کنید</option>
+                                        <option v-for="c in courses" :value="c.id">@{{c.title}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="five wide column">
+                            <div class="field">
+                                <label for="course">گریدر</label>
+                                <div class="rtl">
+                                    <select class="ui rtl" name="grader_id" v-model="gid">
+                                        <option value="-1">انتخاب کنید</option>
+                                        {% verbatim %}
+                                        <option v-for="g in graders" :value="g.id">@{{g.fname + ' ' + g.lname}}</option>
+                                        {% endverbatim %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="fourteen wide column">
+                            <table class="ui hovered selectable celled striped centered rtl table">
+                                <thead>
+                                    <th>سوال</th>
+                                    <th>خیلی خوب</th>
+                                    <th>خوب</th>
+                                    <th>متوسط</th>
+                                    <th>ضعیف</th>
+                                    <th>خیلی ضعیف</th>
+                                    <th>نظری ندارم</th>
+                                </thead>
+                                <tbody>
+                                    {% for (i,q) in questions %}
+                                    <tr>
+                                        <td>{{ q }}</td>
+                                        <td><div class="ui radio checkbox">
+                                            <input type="radio" name="{{ i }}_1" value="1" />
+                                        </div></td>
+                                        <td><div class="ui radio checkbox">
+                                            <input type="radio" name="{{ i }}_1" value="2" />
+                                        </div></td>
+                                        <td><div class="ui radio checkbox">
+                                            <input type="radio" name="{{ i }}_1" value="3" />
+                                        </div></td>
+                                        <td><div class="ui radio checkbox">
+                                            <input type="radio" name="{{ i }}_1" value="4" />
+                                        </div></td>
+                                        <td><div class="ui radio checkbox">
+                                            <input type="radio" name="{{ i }}_1" value="5" />
+                                        </div></td>
+                                        <td><div class="ui radio checkbox">
+                                            <input type="radio" name="{{ i }}_1" value="6" />
+                                        </div></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="centered row">
+                        <div class="ten wide column">
+                            <div class="field">
+                                <label for="comment">یادداشت</label>
+                                <textarea name="comment" id="comment" rows="6" class="is-rtl righted is-font-light"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="centered row">
+                        <div class="field">
+                            <button type="submit" class="ui big green labeled icon button" :disabled="!canSend">
+                                <i class="check icon"></i>
+                                ثبت
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="logos">
+            <div class="logo">
+                <img src="http://cse-shirazu.ir/assets/img/ayten_bluest.png" alt="aytensoft logo">
+                <p>آیتن سافت</p>
+            </div>
+            <div class="logo">
+                <img src="http://cse-shirazu.ir/assets/img/logo_csesa.png" alt="csesa logo">
+                <p>انجمن علمی بخش کامپیوتر</p>
+            </div>
+        </div>
+        <br>
+        <p class="last is-font-light">
+            ساخته شده با
+            <img src="http://cse-shirazu.ir/assets/img/heart_beat.gif" alt="">
+            توسط
+            <a @click="signClicked" href="http://aytensoft.ir" target="_blank">آیتن سافت</a>
+        </p>
+        <br>
+
+    </div>
+
+
+{% endblock content %}

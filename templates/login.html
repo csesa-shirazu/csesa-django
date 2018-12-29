@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <style media="screen">
+        .info.field p {
+            font-weight: 400;
+        }
+    </style>
+{% endblock styles %}
+
+{% block scripts %}
+
+    <script type="text/javascript">
+        loge('Page View', {
+            Page: 'Login'
+        });
+    </script>
+
+    <script>
+        $('.ui.submit.button').click(function() {
+            if ( $('#pass1').val() != $('#pass2').val() || $('#pass1').val() == ''  ) {
+                yswalWarning('خطا', 'دو رمز عبور با هم همخوانی ندارند!');
+                return false;
+            }
+            return true;
+        })
+    </script>
+
+{% endblock scripts %}
+
+{% block content %}
+
+    <div class="ui hidden divider"></div>
+    <br>
+
+    <div class="hide on mobile hard">
+        <div class="ui hidden divider"></div>
+        <br>
+    </div>
+
+    <div class="ui center aligned grid">
+        <div class="fourteen wide mobile nine wide tablet six wide computer column">
+            <div class="ui padded raised right aligned segment">
+
+            <form class="ui form is-rtl" action="{% url 'users:login' %}" method="post">
+                {% csrf_token %}
+
+                <h2 class="ui center aligned header" style="margin-top: 13px;">ورود به سایت نظرسنجی</h2>
+                <h4 class="ui center aligned header" style="margin-top: 13px;">انجمن علمی کامپیوتر</h4>
+
+                {% if error %}
+                    <div class="ten wide column">
+                        <div class="ui icon rtl negative message">
+                            <i class="remove icon"></i>
+                            <div class="content">
+                                <div class="header">
+                                    اطلاعات صحیح نیست
+                                </div>
+                                <p>لطفا اطلاعات وارد شده را بررسی کنید</p>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                {% endif %}
+
+                <div class="info field">
+                    <p>
+                        رمز عبور خود را میتوانید در <a href="https://sess.shirazu.ac.ir">sess</a>، قسمت پیام ها، با عنوان <i>"نظرسنجي گريدري انجمن علمي کامپيوتر"</i> پیدا کنید.
+                    </p>
+                    <p>درصورت بروز مشکل از طریق  <a href="mailto:csesa@cse.shirazu.ac.ir">ایمیل</a> و یا <a href="https://telegram.me/csesa_contact">تلگرام</a> با ما تماس بگیرید.</p>
+                </div>
+
+                <div class="ui hidden divider"></div>
+
+
+                <div class="field">
+                    <div class="ui left icon input">
+                        <input class="is-ltr" type="text" name="username" placeholder="شماره دانشجویی">
+                        <i class="link circular mail icon"></i>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="ui left icon input">
+                        <input class="is-ltr" type="password" name="password" id="pass" placeholder="رمز عبور">
+                        <i class="link circular lock icon"></i>
+                    </div>
+                </div>
+
+                <div class="ui hidden divider"></div>
+
+                <div class="is-text-center">
+                    <button class="ui positive large left labeled icon submit button" type="submit">
+                        ورود به سایت
+                        <i class="signup icon"></i>
+                    </button>
+                </div>
+
+            </form>
+
+            </div>
+        </div>
+    </div>
+
+<!--<div class="container" style="background-color: #FFFFFF; margin: 30px auto;-->
+        <!--width: 400px; padding: 30px; text-align: center;">-->
+
+    <!--<div class="top_container ">-->
+        <!--<div class="col-sm-10" style="display:block; margin: auto;">-->
+            <!--<h2>{{ title }}</h2>-->
+            <!--<hr/>-->
+            <!--<p class="form_description">{{ form_description }}</p>-->
+
+            <!--&lt;!&ndash;{% if messages %}&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class='messages'>&ndash;&gt;-->
+
+                <!--&lt;!&ndash;<ul class="messages">&ndash;&gt;-->
+                <!--&lt;!&ndash;{% for message in messages %}&ndash;&gt;-->
+                <!--&lt;!&ndash;<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{% if "html_safe" in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>&ndash;&gt;-->
+                <!--&lt;!&ndash;{% endfor %}&ndash;&gt;-->
+                <!--&lt;!&ndash;</ul>&ndash;&gt;-->
+
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--&lt;!&ndash;{% endif %}&ndash;&gt;-->
+
+            <!--<form method='POST' action='' id="theform" enctype='multipart/form-data' class="djform ui form">{% csrf_token %}-->
+                <!--{{ form }}-->
+                <!--<div style="text-align: center; margin-top: 0px;">-->
+                    <!--<input class="ui positive button" style="margin: 10px; background-color:#009F4D;" value="ارسال" type="submit" />-->
+                <!--</div>-->
+            <!--</form>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+{% endblock content %}

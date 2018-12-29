@@ -20,11 +20,14 @@ from django.urls import path
 
 from csesa import settings
 from csesa.bot_utils import bot_loop
+from . import views
 
 urlpatterns = [
+  path('', views.index_view, name='index'),
   path('admin/', admin.site.urls),
   path('user/', include('users.urls', namespace='users')),
   path('board/', include('telegramboard.urls', namespace='telegramboard')),
+  path('qualification/', include('qualification.urls', namespace='qualification')),
 ]
 
 

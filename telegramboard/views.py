@@ -13,7 +13,7 @@ from csesa.bot_utils import bot
 
 
 class send_message(View):
-    template_name = 'send_message.html'
+    template_name = 'telegram_board_template.html'
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
