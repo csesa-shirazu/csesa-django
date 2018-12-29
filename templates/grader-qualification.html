@@ -109,7 +109,7 @@
 
         <div class="ui top attached inverted raised padded violet segment">
             <h1 class="ui large centered header">نظرسنجی گریدری</h1>
-            <form action="/logout" id="logout" method="post">
+            <form action="{% url 'users:logout' %}" id="logout" method="get">
                 {!! csrf_field() !!}
                 <button type="submit" class="ui small black labeld icon button is-font-light">
                     <i class="sign out icon"></i>
