@@ -3,5 +3,5 @@ from . import views
 
 app_name = 'qualification'
 urlpatterns = [
-    path('cse-gradery', views.grader_qualification.as_view(), name='cse_gradery'),
+    path('<slug:slug>', views.qualification_view.as_view(), name='form'),
 ]

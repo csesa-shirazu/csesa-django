@@ -6,6 +6,9 @@ from enumfields import Enum  # Uses Ethan Furman's "enum34" backport
 from enumfields import EnumField
 from sorl.thumbnail import ImageField
 
+from users.models import Profile
+from users.serializers import ProfileRetrieveSerializer
+
 
 def campaign_image_upload_location(instance, filename):
     x = timezone.now()
@@ -52,7 +55,23 @@ class Campaign(models.Model):
 
     duration_days = models.IntegerField(blank=True, null=True)
 
+    @property
+    def students(self):
+        return ProfileRetrieveSerializer(
+            Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
+                campaign=self,
+                content_type=ContentType.objects.get(model='profile'),
+                type=CampaignPartyRelationType.STUDENT
+            ).all()), many=True).data
 
+    @property
+    def graders(self):
+        return ProfileRetrieveSerializer(
+            Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
+                campaign=self,
+                content_type=ContentType.objects.get(model='profile'),
+                type=CampaignPartyRelationType.GRADER
+            ).all()), many=True).data
 
     @property
     def name(self):
@@ -79,7 +98,7 @@ class CampaignPartyRelationType(Enum):  # A subclass of Enum
 
 
 class CampaignPartyRelation(models.Model):
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='cprelations')
 
     # party
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -89,4 +108,4 @@ class CampaignPartyRelation(models.Model):
     type = EnumField(CampaignPartyRelationType, max_length=1000)
 
     def __str__(self):
-        return str(self.content_object) + " | " + self.campaign.title
+        return str(self.content_object) + " | " + str(self.campaign)

@@ -69,7 +69,23 @@
         var app = new Vue({
             el: '#vapp',
             data: {
-                courses: {!! json_encode(Auth::user()->courses()) !!},
+                courses: [
+                    {% for c in courses %}
+                        {
+                            id: {{ c.id }},
+                            title: '{{ c.title }}',
+                            graders: [
+                                {% for g in c.graders %}
+                                    {
+                                        id: {{ g.id }},
+                                        first_name: '{{ g.user.first_name }}',
+                                        last_name: '{{ g.user.last_name }}',
+                                    }
+                                {% endfor %}
+                            ]
+                        },
+                    {% endfor %}
+                ],
                 graders: [],
                 isLoading: false,
                 cid: -1,
@@ -78,13 +94,10 @@
             methods: {
                 changeGrader: function(event) {
 
-                    this.isLoading = true;
-
-                    $.get('api/graders?course_id=' + event.target.value, function(data) {
-                        app.graders = data;
-                        app.gid = -1;
-                        app.isLoading = false;
+                    let c = this.courses.find(function(element){
+                        return element.id == event.target.value;
                     });
+                    this.graders = c.graders;
 
                 },
                 signClicked: function() {
@@ -109,25 +122,24 @@
 
         <div class="ui top attached inverted raised padded violet segment">
             <h1 class="ui large centered header">نظرسنجی گریدری</h1>
-            <form action="{% url 'users:logout' %}" id="logout" method="get">
-                {!! csrf_field() !!}
+            <a href="{% url 'users:logout' %}">
                 <button type="submit" class="ui small black labeld icon button is-font-light">
                     <i class="sign out icon"></i>
                     خروج
                 </button>
-            </form>
+            </a>
         </div>
 
         <div class="ui attached padded raised segment" :class="{loading: isLoading}">
-            <form action="/vote" method="POST" class="ui rtl form">
-                {!! csrf_field() !!}
+            <form action="{% url 'qualification:form' slug=the_form.slug %}" method="POST" class="ui rtl form">
+                {% csrf_token %}
                 <div class="ui centered grid">
 
                     <div class="ui hidden divider"></div>
 
-                    @if (Request::has('status'))
+                    {% if status %}
                     <div class="row">
-                        @if (Request::input('status') == 'new')
+                        {% if status == 'new' %}
                         <div class="ten wide column">
                             <div class="ui icon rtl positive message">
                                 <i class="check icon"></i>
@@ -146,7 +158,7 @@
                             });
                         </script>
 
-                        @elseif (Request::input('status') == 'modified')
+                        {% elif status == 'modified' %}
                         <div class="ten wide column">
                             <div class="ui icon rtl warning message">
                                 <i class="warning icon"></i>
@@ -165,7 +177,7 @@
                             });
                         </script>
 
-                        @else
+                        {% else %}
                         <div class="ten wide column">
                             <div class="ui icon rtl negative message">
                                 <i class="remove icon"></i>
@@ -184,9 +196,9 @@
                             });
                         </script>
 
-                        @endif
+                        {% endif %}
                     </div>
-                    @endif
+                    {% endif %}
 
                     <div class="info row">
                         <div class="nine wide column">
@@ -200,23 +212,25 @@
                     <div class="row is-rtl">
                         <div class="five wide column">
                             <div class="field">
-                                <label for="course">درس های شما</label>
+                                <label for="course_id">درس های شما</label>
                                 <div class="rtl">
-                                    <select @change="changeGrader" class="ui rtl" name="course_id" v-model="cid">
+                                    <select @change="changeGrader" class="ui rtl" id="course_id" name="course_id" v-model="cid">
                                         <option value="-1">انتخاب کنید</option>
-                                        <option v-for="c in courses" :value="c.id">@{{c.title}}</option>
+                                        {% verbatim %}
+                                        <option v-for="c in courses" :value="c.id">{{c.title}}</option>
+                                        {% endverbatim %}
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="five wide column">
                             <div class="field">
-                                <label for="course">گریدر</label>
+                                <label for="grader_id">گریدر</label>
                                 <div class="rtl">
-                                    <select class="ui rtl" name="grader_id" v-model="gid">
+                                    <select class="ui rtl" id="grader_id" name="grader_id" v-model="gid">
                                         <option value="-1">انتخاب کنید</option>
                                         {% verbatim %}
-                                        <option v-for="g in graders" :value="g.id">@{{g.fname + ' ' + g.lname}}</option>
+                                        <option v-for="g in graders" :value="g.id">{{g.first_name + ' ' + g.last_name}}</option>
                                         {% endverbatim %}
                                     </select>
                                 </div>
@@ -229,48 +243,25 @@
                             <table class="ui hovered selectable celled striped centered rtl table">
                                 <thead>
                                     <th>سوال</th>
-                                    <th>خیلی خوب</th>
-                                    <th>خوب</th>
-                                    <th>متوسط</th>
-                                    <th>ضعیف</th>
-                                    <th>خیلی ضعیف</th>
-                                    <th>نظری ندارم</th>
+                                    <th>پاسخ</th>
                                 </thead>
                                 <tbody>
-                                    {% for (i,q) in questions %}
+                                    {% for q in the_form.questions %}
                                     <tr>
-                                        <td>{{ q }}</td>
-                                        <td><div class="ui radio checkbox">
-                                            <input type="radio" name="{{ i }}_1" value="1" />
-                                        </div></td>
-                                        <td><div class="ui radio checkbox">
-                                            <input type="radio" name="{{ i }}_1" value="2" />
-                                        </div></td>
-                                        <td><div class="ui radio checkbox">
-                                            <input type="radio" name="{{ i }}_1" value="3" />
-                                        </div></td>
-                                        <td><div class="ui radio checkbox">
-                                            <input type="radio" name="{{ i }}_1" value="4" />
-                                        </div></td>
-                                        <td><div class="ui radio checkbox">
-                                            <input type="radio" name="{{ i }}_1" value="5" />
-                                        </div></td>
-                                        <td><div class="ui radio checkbox">
-                                            <input type="radio" name="{{ i }}_1" value="6" />
-                                        </div></td>
+                                        <td>{{ q.body }}</td>
+                                        <td>
+                                            {% if q.type == 'number' %}
+                                            <div class="ui radio checkbox">
+                                                <input type="radio" name="1" value="1" />
+                                            </div>
+                                            {% elif q.type == 'text' %}
+                                            <textarea></textarea>
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-
-                    <div class="centered row">
-                        <div class="ten wide column">
-                            <div class="field">
-                                <label for="comment">یادداشت</label>
-                                <textarea name="comment" id="comment" rows="6" class="is-rtl righted is-font-light"></textarea>
-                            </div>
                         </div>
                     </div>
 
@@ -299,9 +290,7 @@
         </div>
         <br>
         <p class="last is-font-light">
-            ساخته شده با
-            <img src="http://cse-shirazu.ir/assets/img/heart_beat.gif" alt="">
-            توسط
+            ساخته شده با همکاری
             <a @click="signClicked" href="http://aytensoft.ir" target="_blank">آیتن سافت</a>
         </p>
         <br>
