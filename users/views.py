@@ -31,7 +31,7 @@ def login_view(request):
     if request.user.is_authenticated:
         if next:
             return redirect(next)
-        return redirect(reverse('qualification:cse_gradery'))
+        return reverse('qualification:form', kwargs={'slug': 'cse-gradery'})
 
     return render(request, "login.html", context)
 
