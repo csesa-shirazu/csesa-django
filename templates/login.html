@@ -16,16 +16,6 @@
         });
     </script>
 
-    <script>
-        $('.ui.submit.button').click(function() {
-            if ( $('#pass1').val() != $('#pass2').val() || $('#pass1').val() == ''  ) {
-                yswalWarning('خطا', 'دو رمز عبور با هم همخوانی ندارند!');
-                return false;
-            }
-            return true;
-        })
-    </script>
-
 {% endblock scripts %}
 
 {% block content %}
@@ -42,7 +32,7 @@
         <div class="fourteen wide mobile nine wide tablet six wide computer column">
             <div class="ui padded raised right aligned segment">
 
-            <form class="ui form is-rtl" method="post">
+            <form class="ui form is-rtl" method="post" action="{% url 'users:login' %}">
                 {% csrf_token %}
 
                 <h2 class="ui center aligned header" style="margin-top: 13px;">ورود به سایت نظرسنجی</h2>
@@ -101,36 +91,5 @@
             </div>
         </div>
     </div>
-
-<!--<div class="container" style="background-color: #FFFFFF; margin: 30px auto;-->
-        <!--width: 400px; padding: 30px; text-align: center;">-->
-
-    <!--<div class="top_container ">-->
-        <!--<div class="col-sm-10" style="display:block; margin: auto;">-->
-            <!--<h2>{{ title }}</h2>-->
-            <!--<hr/>-->
-            <!--<p class="form_description">{{ form_description }}</p>-->
-
-            <!--&lt;!&ndash;{% if messages %}&ndash;&gt;-->
-                <!--&lt;!&ndash;<div class='messages'>&ndash;&gt;-->
-
-                <!--&lt;!&ndash;<ul class="messages">&ndash;&gt;-->
-                <!--&lt;!&ndash;{% for message in messages %}&ndash;&gt;-->
-                <!--&lt;!&ndash;<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{% if "html_safe" in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>&ndash;&gt;-->
-                <!--&lt;!&ndash;{% endfor %}&ndash;&gt;-->
-                <!--&lt;!&ndash;</ul>&ndash;&gt;-->
-
-                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-            <!--&lt;!&ndash;{% endif %}&ndash;&gt;-->
-
-            <!--<form method='POST' action='' id="theform" enctype='multipart/form-data' class="djform ui form">{% csrf_token %}-->
-                <!--{{ form }}-->
-                <!--<div style="text-align: center; margin-top: 0px;">-->
-                    <!--<input class="ui positive button" style="margin: 10px; background-color:#009F4D;" value="ارسال" type="submit" />-->
-                <!--</div>-->
-            <!--</form>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</div>-->
 
 {% endblock content %}
