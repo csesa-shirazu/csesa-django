@@ -13,6 +13,7 @@ class QualificationQuestionSerializer(EnumSupportSerializerMixin, ModelSerialize
     class Meta:
         model = Question
         fields = [
+            'id',
             'coeff',
             'body',
             'type'

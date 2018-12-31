@@ -59,6 +59,21 @@
 {% block scripts %}
 
     <script type="text/javascript">
+
+        $(document).ready(function(){
+          $('.ui.range').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            step: 1,
+            smooth: true,
+            onChange: function(value) {
+                console.log($(this).attr('qid'));
+              $('#ans-' + $(this).attr('qid')).val(value);
+            }
+          });
+         });
+
         loge('Page View', {
             Page: 'Index',
             UserId: {{ request.user.id }}
@@ -252,17 +267,17 @@
                                         <td>{{ q.body }}</td>
                                         <td>
                                             {% if q.type == 'number' %}
-                                            <div class="ui radio checkbox">
-                                                <input type="radio" name="1" value="1" />
-                                            </div>
+                                            <div class="ui basic teal range" qid="{{ q.id }}"></div>
+                                            <input type="hidden" name="ans_{{ q.id }}" id="ans-{{ q.id }}" value="50">
                                             {% elif q.type == 'text' %}
-                                            <textarea></textarea>
+                                            <textarea name="ans_{{ q.id }}"></textarea>
                                             {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+
                         </div>
                     </div>
 
