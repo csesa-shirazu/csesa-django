@@ -53,6 +53,48 @@
             direction: rtl;
             text-align: right !important;
         }
+
+
+
+        /* slider */
+
+        .slidecontainer {
+          width: 100%;
+        }
+
+        .slider {
+          -webkit-appearance: none;
+          width: 70%;
+          height: 8px;
+          border-radius: 5px;
+          background: #33aaaa;
+          outline: none;
+          opacity: 0.7;
+          -webkit-transition: .2s;
+          transition: opacity .2s;
+        }
+
+        .slider:hover {
+          opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: teal;
+          cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: #4CAF50;
+          cursor: pointer;
+        }
     </style>
 {% endblock styles %}
 
@@ -61,23 +103,18 @@
     <script type="text/javascript">
 
         $(document).ready(function(){
-          $('.ui.range').range({
-            min: 0,
-            max: 100,
-            start: 50,
-            step: 1,
-            smooth: true,
-            onChange: function(value) {
-                console.log($(this).attr('qid'));
-              $('#ans-' + $(this).attr('qid')).val(value);
-            }
-          });
+
+
+        {% for q in the_form.questions %}
+
+            $("#range-{{ q.id }}").change(function() {
+              $("#ans-{{ q.id }}").val(Number($(this).val()));
+              $("#range-display-{{ q.id }}").text(Number($(this).val()));
+            });
+
+          {% endfor %}
          });
 
-        loge('Page View', {
-            Page: 'Index',
-            UserId: {{ request.user.id }}
-        });
     </script>
 
     <script>
@@ -168,11 +205,6 @@
                             </div>
                         </div>
 
-                        <script type="text/javascript">
-                            loge('Vote', {
-                                Status: 'New'
-                            });
-                        </script>
 
                         {% elif status == 'modified' %}
                         <div class="ten wide column">
@@ -267,7 +299,8 @@
                                         <td>{{ q.body }}</td>
                                         <td>
                                             {% if q.type == 'number' %}
-                                            <div class="ui basic teal range" qid="{{ q.id }}"></div>
+
+                                            <span style="margin: 5px;" id="range-display-{{ q.id }}">50</span><input type="range" min="0" max="100" value="50" dir="ltr" class="slider" id="range-{{ q.id }}">
                                             <input type="hidden" name="ans_{{ q.id }}" id="ans-{{ q.id }}" value="50">
                                             {% elif q.type == 'text' %}
                                             <textarea name="ans_{{ q.id }}"></textarea>
