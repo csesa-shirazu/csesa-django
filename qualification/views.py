@@ -45,7 +45,7 @@ class qualification_view(View):
     def post(self, request, slug=None, *args, **kwargs):
         the_form = get_object_or_404(QualificationForm, slug=slug)
         if request.user.is_authenticated:
-
+            the_student = request.user.profile.first()
             context = self.the_context(request, the_form)
             the_campaign = get_object_or_404(Campaign, id=int(request.POST['course_id']))
             the_grader = get_object_or_404(Profile, id=int(request.POST['grader_id']))
@@ -56,9 +56,9 @@ class qualification_view(View):
                 campaign=the_campaign
             )
             the_student_cpr = CampaignPartyRelation.objects.get(
-                type=CampaignPartyRelationType.GRADER,
-                content_type=ContentType.objects.get_for_model(the_grader),
-                object_id=the_grader.id,
+                type=CampaignPartyRelationType.STUDENT,
+                content_type=ContentType.objects.get_for_model(the_student),
+                object_id=the_student.id,
                 campaign=the_campaign
             )
             try:
