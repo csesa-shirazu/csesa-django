@@ -22,7 +22,8 @@ class qualification_view(View):
                 'courses': CampaignAsCourseSerializer(
                     Campaign.objects.filter(
                         cprelations__in = CampaignPartyRelation.objects.filter(
-                            object_id=the_profile.id
+                            object_id=the_profile.id,
+                            type=CampaignPartyRelationType.STUDENT
                         )
                     ),
                     many=True
