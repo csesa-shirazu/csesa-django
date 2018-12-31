@@ -27,11 +27,10 @@ def login_view(request):
         login(request, user)
     elif request.POST: # Data is submitted and invalid
             context['error'] = True
-
     if request.user.is_authenticated:
         if next:
             return redirect(next)
-        return reverse('qualification:form', kwargs={'slug': 'cse-gradery'})
+        return redirect(reverse('qualification:form', kwargs={'slug': 'cse-gradery'}))
 
     return render(request, "login.html", context)
 
