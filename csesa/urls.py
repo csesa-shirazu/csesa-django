@@ -24,6 +24,7 @@ from . import views
 
 urlpatterns = [
   path('', views.index_view, name='index'),
+  path('graders/', views.graders_view, name='graders'),
   path('admin/', admin.site.urls),
   path('user/', include('users.urls', namespace='users')),
   path('board/', include('telegramboard.urls', namespace='telegramboard')),
