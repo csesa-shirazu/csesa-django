@@ -321,7 +321,7 @@
                                             {% if q.type == 'number' %}
                                             <!-- Shame on me for this code :// -->
                                             <span style="margin: 5px;" id="range-display-{{ q.id }}">50</span><input type="range" min="0" max="100" value="50" dir="ltr" class="slider" id="range-{{ q.id }}">
-                                            <label>نظری ندارم</label>
+                                            <label for="make-null-{{ q.id }}">نظری ندارم</label>
                                             <input type="checkbox" id="make-null-{{ q.id }}" />
                                             <input type="hidden" name="ans_{{ q.id }}" id="ans-{{ q.id }}" value="50">
                                             {% elif q.type == 'text' %}
