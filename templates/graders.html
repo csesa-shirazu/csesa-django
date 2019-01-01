@@ -17,6 +17,22 @@
 
 </head>
 <body dir="rtl">
+    {% if message %}
+    <p>
+        {{ message }}
+    </p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <input style="margin: 10px;" type="text" name="gid" />
+        <select style="margin: 10px;" name="cid">
+            <option value="-1">انتخاب کنید</option>
+            {% for c in courses %}
+            <option value="{{ c.id }}">{{ c.title }} | {{ c.group }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" style="margin: 10px;" value="افزودن"/>
+    </form>
     <table>
         <thead>
             <th>
