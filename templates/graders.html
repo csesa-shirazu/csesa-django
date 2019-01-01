@@ -24,9 +24,9 @@
     {% endif %}
     <form method="post">
         {% csrf_token %}
-        <input style="margin: 10px;" type="text" name="gid" />
+        <input placeholder="شماره دانشجویی" style="margin: 10px;" type="text" name="gid" />
         <select style="margin: 10px;" name="cid">
-            <option value="-1">انتخاب کنید</option>
+            <option value="-1">درس و گروه</option>
             {% for c in courses %}
             <option value="{{ c.id }}">{{ c.title }} | {{ c.group }}</option>
             {% endfor %}
