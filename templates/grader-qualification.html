@@ -72,7 +72,7 @@
 
         .slider {
           -webkit-appearance: none;
-          width: 70%;
+          width: 65%;
           height: 8px;
           border-radius: 5px;
           background: #33aaaa;
@@ -119,6 +119,19 @@
               $("#ans-{{ q.id }}").val(Number($(this).val()));
               $("#range-display-{{ q.id }}").text(Number($(this).val()));
             });
+
+            $("#make-null-{{ q.id }}").change(function() {
+                if($(this).is(":checked")){
+                    $("#ans-{{ q.id }}").val('-1');
+                    $("#range-display-{{ q.id }}").hide();
+                    $("#range-{{ q.id }}").attr('disabled','disabled');
+                } else {
+                    $("#ans-{{ q.id }}").val(Number($("#range-{{ q.id }}").val()));
+                    $("#range-display-{{ q.id }}").show();
+                    $("#range-{{ q.id }}").removeAttr('disabled');
+                }
+            });
+
 
           {% endfor %}
          });
@@ -308,6 +321,8 @@
                                             {% if q.type == 'number' %}
 
                                             <span style="margin: 5px;" id="range-display-{{ q.id }}">50</span><input type="range" min="0" max="100" value="50" dir="ltr" class="slider" id="range-{{ q.id }}">
+                                            <label>نظری ندارم</label>
+                                            <input type="checkbox" id="make-null-{{ q.id }}" />
                                             <input type="hidden" name="ans_{{ q.id }}" id="ans-{{ q.id }}" value="50">
                                             {% elif q.type == 'text' %}
                                             <textarea name="ans_{{ q.id }}"></textarea>
