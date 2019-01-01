@@ -140,6 +140,7 @@
                                         id: {{ g.id }},
                                         first_name: '{{ g.user.first_name }}',
                                         last_name: '{{ g.user.last_name }}',
+                                        done: {{ g.done }}
                                     },
                                 {% endfor %}
                             ]
@@ -282,7 +283,10 @@
                                 <select class="ui rtl" id="grader_id" name="grader_id" v-model="gid">
                                     <option value="-1">انتخاب کنید</option>
                                     {% verbatim %}
-                                    <option v-for="g in graders" :value="g.id">{{g.first_name + ' ' + g.last_name}}</option>
+                                    <template v-for="g in graders">
+                                    <option v-if="g.done" :value="g.id">{{g.first_name + ' ' + g.last_name}} (انجام شده)</option>
+                                    <option v-else :value="g.id">{{g.first_name + ' ' + g.last_name}}</option>
+                                    </template>
                                     {% endverbatim %}
                                 </select>
                             </div>

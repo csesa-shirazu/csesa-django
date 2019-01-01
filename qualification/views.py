@@ -3,7 +3,6 @@ from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views import View
-from rest_framework.renderers import JSONRenderer
 
 from campaigns.models import Campaign, CampaignPartyRelation, CampaignPartyRelationType
 from campaigns.serializers import CampaignAsCourseSerializer
@@ -18,7 +17,7 @@ class qualification_view(View):
     @staticmethod
     def the_context(request, the_form):
         the_profile = request.user.profile.first()
-        return {
+        context = {
             'courses': CampaignAsCourseSerializer(
                 Campaign.objects.filter(
                     cprelations__in=CampaignPartyRelation.objects.filter(
@@ -32,6 +31,33 @@ class qualification_view(View):
                 the_form,
             ).data
         }
+        the_student = request.user.profile.first()
+        for course in context['courses']:
+            for grader in course['graders']:
+                the_campaign = get_object_or_404(Campaign, id=int(course['id']))
+                the_grader = get_object_or_404(Profile, id=int(grader['id']))
+                the_grader_cpr = CampaignPartyRelation.objects.get(
+                    type=CampaignPartyRelationType.GRADER,
+                    content_type=ContentType.objects.get_for_model(the_grader),
+                    object_id=the_grader.id,
+                    campaign=the_campaign
+                )
+                the_student_cpr = CampaignPartyRelation.objects.get(
+                    type=CampaignPartyRelationType.STUDENT,
+                    content_type=ContentType.objects.get_for_model(the_student),
+                    object_id=the_student.id,
+                    campaign=the_campaign
+                )
+
+                if Qualification.objects.filter(
+                    src=the_student_cpr,
+                    dst=the_grader_cpr
+                ).exists():
+                    grader['done'] = 'true'
+                else:
+                    grader['done'] = 'false'
+
+        return context
 
     def get(self, request, slug=None, *args, **kwargs):
         the_form = get_object_or_404(QualificationForm, slug=slug)
@@ -45,8 +71,9 @@ class qualification_view(View):
     def post(self, request, slug=None, *args, **kwargs):
         the_form = get_object_or_404(QualificationForm, slug=slug)
         if request.user.is_authenticated:
+            context = {}
+
             the_student = request.user.profile.first()
-            context = self.the_context(request, the_form)
             the_campaign = get_object_or_404(Campaign, id=int(request.POST['course_id']))
             the_grader = get_object_or_404(Profile, id=int(request.POST['grader_id']))
             the_grader_cpr = CampaignPartyRelation.objects.get(
@@ -100,6 +127,8 @@ class qualification_view(View):
                     context['status'] = 'modified'
                 else:
                     context['status'] = 'new'
+
+            context.update(self.the_context(request, the_form))
             return render(request, self.template_name, context)
         else:
             return redirect(reverse('users:login') + "?next=" + request.path_info)
