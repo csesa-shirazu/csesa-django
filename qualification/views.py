@@ -19,19 +19,19 @@ class qualification_view(View):
     def the_context(request, the_form):
         the_profile = request.user.profile.first()
         return {
-                'courses': CampaignAsCourseSerializer(
-                    Campaign.objects.filter(
-                        cprelations__in = CampaignPartyRelation.objects.filter(
-                            object_id=the_profile.id,
-                            type=CampaignPartyRelationType.STUDENT
-                        )
-                    ),
-                    many=True
-                ).data,
-                'the_form': QualificationFormSerializer(
-                    the_form,
-                ).data
-            }
+            'courses': CampaignAsCourseSerializer(
+                Campaign.objects.filter(
+                    cprelations__in=CampaignPartyRelation.objects.filter(
+                        object_id=the_profile.id,
+                        type=CampaignPartyRelationType.STUDENT
+                    )
+                ),
+                many=True
+            ).data,
+            'the_form': QualificationFormSerializer(
+                the_form,
+            ).data
+        }
 
     def get(self, request, slug=None, *args, **kwargs):
         the_form = get_object_or_404(QualificationForm, slug=slug)
@@ -63,28 +63,28 @@ class qualification_view(View):
             )
             try:
                 the_qualification = Qualification.objects.get(
-                    src = the_student_cpr,
-                    dst = the_grader_cpr
+                    src=the_student_cpr,
+                    dst=the_grader_cpr
                 )
                 edit = True
             except:
                 the_qualification = Qualification.objects.create(
-                    src = the_student_cpr,
-                    dst = the_grader_cpr
+                    src=the_student_cpr,
+                    dst=the_grader_cpr
                 )
                 edit = False
             for q in the_form.questions.all():
                 if 'ans_' + str(q.id) in request.POST:
                     try:
                         the_qa = QA.objects.get(
-                            qualification = the_qualification,
-                            question = q
+                            qualification=the_qualification,
+                            question=q
                         )
                     except:
                         QA.objects.create(
-                            qualification = the_qualification,
-                            question = q,
-                            answer = request.POST['ans_' + str(q.id)],
+                            qualification=the_qualification,
+                            question=q,
+                            answer=request.POST['ans_' + str(q.id)],
                         )
                     else:
                         the_qa.answer = request.POST['ans_' + str(q.id)]
@@ -93,7 +93,6 @@ class qualification_view(View):
                     context['status'] = 'error'
                     if not edit:
                         the_qualification.delete()
-
 
             # print(request.POST)
             if 'status' not in context:

@@ -2,6 +2,14 @@
 
 {% block styles %}
     <style>
+        #course-grader .dropdown-label {
+            text-align: center;
+        }
+        #course-grader .dropdown-container {
+            min-width: 300px;
+            margin: 10px;
+        }
+
         table th {
             font-weight: 500 !important;
         }
@@ -256,32 +264,27 @@
                             <p>لطفا فیلد <b>یادداشت</b> را فراموش نکنید.<br>یادداشت های شما درباره ی گریدر ها، ما را سریع تر به هدف ارتقاء وضعیت گریدری ها نزدیک می کند.<br>همچنین هرگونه انتقاد یا پیشنهادی را به واسطه ی این فیلد، یا <a href="mailto:csesa@cse.shirazu.ac.ir">ایمیل</a> و یا <a href="https://telegram.me/csesa_contact">تلگرام</a> به ما منتقل کنید.</p>
                         </div>
                     </div>
-
-                    <div class="row is-rtl">
-                        <div class="five wide column">
-                            <div class="field">
-                                <label for="course_id">درس های شما</label>
-                                <div class="rtl">
-                                    <select @change="changeGrader" class="ui rtl" id="course_id" name="course_id" v-model="cid">
-                                        <option value="-1">انتخاب کنید</option>
-                                        {% verbatim %}
-                                        <option v-for="c in courses" :value="c.id">{{c.title}}</option>
-                                        {% endverbatim %}
-                                    </select>
-                                </div>
+                    <div class="row is-rtl" id="course-grader" style="display:flex; flex-wrap:wrap;">
+                        <div class="dropdown-container field">
+                            <label class="dropdown-label" for="course_id">درس های شما</label>
+                            <div class="rtl">
+                                <select @change="changeGrader" class="ui rtl" id="course_id" name="course_id" v-model="cid">
+                                    <option value="-1">انتخاب کنید</option>
+                                    {% verbatim %}
+                                    <option v-for="c in courses" :value="c.id">{{c.title}}</option>
+                                    {% endverbatim %}
+                                </select>
                             </div>
                         </div>
-                        <div class="five wide column">
-                            <div class="field">
-                                <label for="grader_id">گریدر</label>
-                                <div class="rtl">
-                                    <select class="ui rtl" id="grader_id" name="grader_id" v-model="gid">
-                                        <option value="-1">انتخاب کنید</option>
-                                        {% verbatim %}
-                                        <option v-for="g in graders" :value="g.id">{{g.first_name + ' ' + g.last_name}}</option>
-                                        {% endverbatim %}
-                                    </select>
-                                </div>
+                        <div class="dropdown-container field">
+                            <label class="dropdown-label" for="grader_id">گریدر</label>
+                            <div class="rtl">
+                                <select class="ui rtl" id="grader_id" name="grader_id" v-model="gid">
+                                    <option value="-1">انتخاب کنید</option>
+                                    {% verbatim %}
+                                    <option v-for="g in graders" :value="g.id">{{g.first_name + ' ' + g.last_name}}</option>
+                                    {% endverbatim %}
+                                </select>
                             </div>
                         </div>
                     </div>
