@@ -18,9 +18,9 @@ def set_passwords():
     profiles = Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
         content_type=ContentType.objects.get(model='profile'),
         type=CampaignPartyRelationType.STUDENT
-    ).all()).all()
+    ).all()).all().distinct()
 
-    f = open('up.txt', 'w')
+    f = open('cse-data/up.txt', 'w')
     for profile in profiles:
         pas = randpass()
         user = profile.user
