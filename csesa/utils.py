@@ -6,11 +6,10 @@ from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, C
 from csecourses.models import CSECourse, CSECourseGroup, CSECourseGroupTerm, CSETerm
 from users.models import Profile, User
 
-
 def rand_string():
     pas = ""
     for i in range(5):
-        pas += random.choice(string.ascii_letters)
+        pas += random.choice(string.ascii_lowercase)
     return pas
 
 
