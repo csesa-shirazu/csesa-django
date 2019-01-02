@@ -314,8 +314,7 @@
                             <table class="ui hovered selectable celled striped centered rtl table">
                                 <thead>
                                     <th>سوال</th>
-                                    <th>پاسخ</th>
-                                    <th></th>
+                                    <th colspan="2">پاسخ</th>
                                 </thead>
                                 <tbody>
                                     {% for q in the_form.questions %}
@@ -336,10 +335,9 @@
                                             <input type="checkbox" id="make-null-{{ q.id }}" />
                                         </td>
                                             {% elif q.question.type == 'text' %}
-                                        <td>
+                                        <td colspan="2">
                                             <textarea name="ans_{{ q.id }}"></textarea>
                                         </td>
-                                        <td></td>
                                             {% endif %}
                                     </tr>
                                     {% endfor %}
