@@ -71,7 +71,7 @@ class Campaign(models.Model):
                 campaign=self,
                 content_type=ContentType.objects.get(model='profile'),
                 type=CampaignPartyRelationType.GRADER
-            ).all()), many=True).data
+            ).all()).order_by('-id'), many=True).data
 
     @property
     def name(self):
