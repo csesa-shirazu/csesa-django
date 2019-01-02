@@ -21,30 +21,14 @@ class QuestionSerializer(EnumSupportSerializerMixin, ModelSerializer):
         ]
 
 class QualificationQuestionSerializer(EnumSupportSerializerMixin, ModelSerializer):
-    coeff = SerializerMethodField()
-    body = SerializerMethodField()
-    type = SerializerMethodField()
-
+    question = QuestionSerializer()
     class Meta:
         model = QuestionQualificationRelation
         fields = [
             'id',
-            'coeff',
-            'body',
-            'type',
+            'question',
             'place'
         ]
-
-    def get_coeff(self, obj):
-        return obj.question.coeff
-
-    def get_body(self, obj):
-        return obj.question.body
-
-    def get_type(self, obj):
-        return QuestionSerializer(
-            obj.question
-        ).data['type']
 
 
 class QualificationFormSerializer(EnumSupportSerializerMixin, ModelSerializer):

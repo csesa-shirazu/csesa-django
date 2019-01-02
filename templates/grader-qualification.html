@@ -270,14 +270,6 @@
                     </div>
                     {% endif %}
 
-                    <div class="info row">
-                        <div class="nine wide column">
-                            <p>شما در این قسمت، گریدرهای خود را ارزیابی می کنید :)
-                            <br>برای تک تک گریدرهای خود، جداگانه فرم را پرکرده و ثبت کنید.
-                            </p>
-                            <p>لطفا فیلد <b>یادداشت</b> را فراموش نکنید.<br>یادداشت های شما درباره ی گریدر ها، ما را سریع تر به هدف ارتقاء وضعیت گریدری ها نزدیک می کند.<br>همچنین هرگونه انتقاد یا پیشنهادی را به واسطه ی این فیلد، یا <a href="mailto:csesa@cse.shirazu.ac.ir">ایمیل</a> و یا <a href="https://telegram.me/csesa_contact">تلگرام</a> به ما منتقل کنید.</p>
-                        </div>
-                    </div>
                     <div class="row is-rtl" id="course-grader" style="display:flex; flex-wrap:wrap;">
                         <div class="dropdown-container field">
                             <label class="dropdown-label" for="course_id">درس های شما</label>
@@ -316,15 +308,19 @@
                                 <tbody>
                                     {% for q in the_form.questions %}
                                     <tr>
-                                        <td>{{ q.body }}</td>
+                                        {% if q.question.coeff > 1 %}
+                                        <td>{{ q.question.body }} (ضریب {{ q.question.coeff }} دارد)</td>
+                                        {% else %}
+                                        <td>{{ q.question.body }}</td>
+                                        {% endif %}
                                         <td>
-                                            {% if q.type == 'number' %}
+                                            {% if q.question.type == 'number' %}
                                             <!-- Shame on me for this code :// -->
                                             <span style="margin: 5px;" id="range-display-{{ q.id }}">50</span><input type="range" min="0" max="100" value="50" dir="ltr" class="slider" id="range-{{ q.id }}">
                                             <label for="make-null-{{ q.id }}">نظری ندارم</label>
                                             <input type="checkbox" id="make-null-{{ q.id }}" />
                                             <input type="hidden" name="ans_{{ q.id }}" id="ans-{{ q.id }}" value="50">
-                                            {% elif q.type == 'text' %}
+                                            {% elif q.question.type == 'text' %}
                                             <textarea name="ans_{{ q.id }}"></textarea>
                                             {% endif %}
                                         </td>

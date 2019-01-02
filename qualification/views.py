@@ -101,8 +101,7 @@ class qualification_view(View):
                 )
                 edit = False
             for qr in the_form.questions.all():
-                q = qr.question
-                if 'ans_' + str(q.id) in request.POST and q.is_valid_ans(request.POST['ans_' + str(q.id)]):
+                if 'ans_' + str(qr.id) in request.POST and qr.question.is_valid_ans(request.POST['ans_' + str(qr.id)]):
                     try:
                         the_qa = QA.objects.get(
                             qualification=the_qualification,
@@ -112,10 +111,10 @@ class qualification_view(View):
                         QA.objects.create(
                             qualification=the_qualification,
                             question=qr,
-                            answer=request.POST['ans_' + str(q.id)],
+                            answer=request.POST['ans_' + str(qr.id)],
                         )
                     else:
-                        the_qa.answer = request.POST['ans_' + str(q.id)]
+                        the_qa.answer = request.POST['ans_' + str(qr.id)]
                         the_qa.save()
                 else:
                     context['status'] = 'error'
