@@ -100,17 +100,18 @@ class qualification_view(View):
                     dst=the_grader_cpr
                 )
                 edit = False
-            for q in the_form.questions.all():
+            for qr in the_form.questions.all():
+                q = qr.question
                 if 'ans_' + str(q.id) in request.POST and q.is_valid_ans(request.POST['ans_' + str(q.id)]):
                     try:
                         the_qa = QA.objects.get(
                             qualification=the_qualification,
-                            question=q
+                            question=qr
                         )
                     except:
                         QA.objects.create(
                             qualification=the_qualification,
-                            question=q,
+                            question=qr,
                             answer=request.POST['ans_' + str(q.id)],
                         )
                     else:

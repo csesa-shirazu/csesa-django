@@ -32,11 +32,13 @@ class Question(models.Model):
 
 class QualificationForm(models.Model):
     slug = models.SlugField()
-    questions = models.ManyToManyField(to=Question)
 
-
+class QuestionQualificationRelation(models.Model):
+    form = models.ForeignKey(to=QualificationForm, on_delete=models.CASCADE, related_name="questions")
+    question = models.ForeignKey(to=Question, on_delete=models.CASCADE, related_name="forms")
+    place = models.IntegerField()
 
 class QA(models.Model):
     qualification = models.ForeignKey(to=Qualification, on_delete=models.CASCADE, related_name="answers")
-    question = models.ForeignKey(to=Question, on_delete=models.CASCADE, related_name="answers")
+    question = models.ForeignKey(to=QuestionQualificationRelation, on_delete=models.CASCADE, related_name="answers")
     answer = models.TextField()
