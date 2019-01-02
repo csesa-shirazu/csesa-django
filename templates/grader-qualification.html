@@ -2,6 +2,12 @@
 
 {% block styles %}
     <style>
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
         #course-grader .dropdown-label {
             text-align: center;
         }
@@ -115,20 +121,25 @@
 
         {% for q in the_form.questions %}
 
-            $("#range-{{ q.id }}").change(function() {
+            $("#range-{{ q.id }}").on('mousemove change', function() {
               $("#ans-{{ q.id }}").val(Number($(this).val()));
-              $("#range-display-{{ q.id }}").text(Number($(this).val()));
+              $("#range-display-{{ q.id }}").val(Number($(this).val()));
+            });
+
+            $("#range-display-{{ q.id }}").on('keyup change',function() {
+              $("#ans-{{ q.id }}").val(Number($(this).val()));
+              $("#range-{{ q.id }}").val(Number($(this).val()));
             });
 
             $("#make-null-{{ q.id }}").change(function() {
                 if($(this).is(":checked")){
                     $("#ans-{{ q.id }}").val('-1');
                     $("#range-display-{{ q.id }}").hide();
-                    $("#range-{{ q.id }}").attr('disabled','disabled');
+                    $("#range-{{ q.id }}").hide();
                 } else {
                     $("#ans-{{ q.id }}").val(Number($("#range-{{ q.id }}").val()));
                     $("#range-display-{{ q.id }}").show();
-                    $("#range-{{ q.id }}").removeAttr('disabled');
+                    $("#range-{{ q.id }}").show();
                 }
             });
 
@@ -304,6 +315,7 @@
                                 <thead>
                                     <th>سوال</th>
                                     <th>پاسخ</th>
+                                    <th></th>
                                 </thead>
                                 <tbody>
                                     {% for q in the_form.questions %}
@@ -313,17 +325,22 @@
                                         {% else %}
                                         <td>{{ q.question.body }}</td>
                                         {% endif %}
-                                        <td>
                                             {% if q.question.type == 'number' %}
                                             <!-- Shame on me for this code :// -->
-                                            <span style="margin: 5px;" id="range-display-{{ q.id }}">50</span><input type="range" min="0" max="100" value="50" dir="ltr" class="slider" id="range-{{ q.id }}">
+                                        <td>
+                                            <input type="number" min="-1" max="100" style="width: 30px; padding: 3px; margin: 1px; text-align: center;" id="range-display-{{ q.id }}" value="50" /><input type="range" min="0" max="100" value="50" dir="ltr" class="slider" id="range-{{ q.id }}">
+                                            <input type="hidden" name="ans_{{ q.id }}" id="ans-{{ q.id }}" value="50">
+                                        </td>
+                                        <td>
                                             <label for="make-null-{{ q.id }}">نظری ندارم</label>
                                             <input type="checkbox" id="make-null-{{ q.id }}" />
-                                            <input type="hidden" name="ans_{{ q.id }}" id="ans-{{ q.id }}" value="50">
-                                            {% elif q.question.type == 'text' %}
-                                            <textarea name="ans_{{ q.id }}"></textarea>
-                                            {% endif %}
                                         </td>
+                                            {% elif q.question.type == 'text' %}
+                                        <td>
+                                            <textarea name="ans_{{ q.id }}"></textarea>
+                                        </td>
+                                        <td></td>
+                                            {% endif %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
