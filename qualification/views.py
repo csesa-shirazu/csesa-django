@@ -101,7 +101,7 @@ class qualification_view(View):
                 )
                 edit = False
             for q in the_form.questions.all():
-                if 'ans_' + str(q.id) in request.POST:
+                if 'ans_' + str(q.id) in request.POST and q.is_valid_ans(request.POST['ans_' + str(q.id)]):
                     try:
                         the_qa = QA.objects.get(
                             qualification=the_qualification,
@@ -120,6 +120,7 @@ class qualification_view(View):
                     context['status'] = 'error'
                     if not edit:
                         the_qualification.delete()
+                        break
 
             # print(request.POST)
             if 'status' not in context:
