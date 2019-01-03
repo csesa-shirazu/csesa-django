@@ -57,3 +57,6 @@ class QA(models.Model):
     qualification = models.ForeignKey(to=Qualification, on_delete=models.CASCADE, related_name="answers")
     question = models.ForeignKey(to=QuestionQualificationRelation, on_delete=models.CASCADE, related_name="answers")
     answer = models.TextField()
+
+    def __str__(self):
+        return str(self.question) + " | " + str(self.answer)
