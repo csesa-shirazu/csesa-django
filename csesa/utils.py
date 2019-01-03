@@ -65,3 +65,37 @@ def read_teachers():
                 content_object=p,
                 type=CampaignPartyRelationType.GRADER
             )
+
+# Temporary and bad function!
+def read_courses(stdno):
+    u = User.objects.get(username=stdno)
+    p = u.profile.first()
+    f = json.loads(open('cse-data/course_students_97_1st.json', 'r').read())
+    for x in f:
+        found = False
+
+        for k in f[x]['students']:
+            if k['first_name'] == u.first_name and k['family_name'] == u.last_name:
+                found = True
+                break
+
+        if not found:
+            continue
+
+        print(f[x]['name'])
+
+        c = CSECourse.objects.get(cse_id=x.split('^')[0])
+        cg = CSECourseGroup.objects.get(course=c, group=int(x.split('^')[1]))
+        cgt = CSECourseGroupTerm.objects.get(term=CSETerm.objects.first(), course_group=cg)
+        the_campaign = Campaign.objects.get(course_data=cgt)
+        if not CampaignPartyRelation.objects.filter(
+                campaign=the_campaign,
+                content_type=ContentType.objects.get_for_model(p),
+                object_id=p.id,
+                type=CampaignPartyRelationType.STUDENT
+        ).exists():
+            CampaignPartyRelation.objects.create(
+                campaign=the_campaign,
+                content_object=p,
+                type=CampaignPartyRelationType.STUDENT
+            )
