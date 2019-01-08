@@ -23,7 +23,6 @@ class Question(models.Model):
 
     def is_valid_ans(self, ans):
         if self.type == QuestionType.TYPE_NUMBER:
-            print(self.body)
             try:
                 if -1 <= int(ans) <= 100:
                     return True
