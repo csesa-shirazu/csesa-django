@@ -129,7 +129,6 @@ class qualification_view(View):
                         the_qualification.delete()
                         break
 
-            # print(request.POST)
             if 'status' not in context:
                 if edit:
                     context['status'] = 'modified'

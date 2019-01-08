@@ -27,10 +27,8 @@ class Question(models.Model):
                 if -1 <= int(ans) <= 100:
                     return True
                 else:
-                    print("sag")
                     return False
             except:  # in case ans is not number
-                print(ans)
                 return False
         return True
 
