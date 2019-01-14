@@ -10,7 +10,7 @@ from django.db.models.signals import post_save
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="profile")
 
-    campaign_relations = GenericRelation('campaigns.CampaignPartyRelation')
+    campaign_relations = GenericRelation('campaigns.CampaignPartyRelation', related_query_name='campaign_relations_profiles')
 
     def __str__(self):
         return str(self.user)

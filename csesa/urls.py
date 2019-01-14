@@ -29,6 +29,7 @@ urlpatterns = [
   path('user/', include('users.urls', namespace='users')),
   path('board/', include('telegramboard.urls', namespace='telegramboard')),
   path('qualification/', include('qualification.urls', namespace='qualification')),
+  path('api/v1/qualification/', include('qualification.apiv1.urls', namespace='qualification-api-v1')),
 ]
 
 
