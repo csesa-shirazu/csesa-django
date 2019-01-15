@@ -6,43 +6,26 @@ from rest_framework.permissions import (
     AllowAny,
 )
 
-from campaigns.models import CampaignPartyRelation
+from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType
 from qualification.models import Qualification
 from .serializers import (
-    GraderQualifiactionResult
+    GraderQualifiactionPublicResult
 )
 
 from users.models import User
 
+
 class QualifiactionResultAPIView(ListAPIView):
-    serializer_class = GraderQualifiactionResult
+    serializer_class = GraderQualifiactionPublicResult
     permission_classes = [AllowAny]
     lookup_field = ['slug']
 
     def get_queryset(self, *args, **kwargs):
-        print(kwargs)
-        print(args)
-        print(self.kwargs['username'])
         profile = User.objects.get(username=self.kwargs['username']).profile.first()
 
-        queryset_list = Qualification.objects.filter(
-            dst__in=CampaignPartyRelation.objects.filter(
-                campaign_relations_profiles=profile
-            )
+        queryset_list = CampaignPartyRelation.objects.filter(
+            campaign_relations_profiles=profile,
+            type=CampaignPartyRelationType.GRADER
         )
 
         return queryset_list
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,22 +3,48 @@ from rest_framework.serializers import (
     ModelSerializer
 )
 
-from qualification.models import Qualification
+from campaigns.models import CampaignPartyRelation
+from qualification.models import Qualification, QuestionType, QualificationForm, QA
 
 
-class GraderQualifiactionResult(ModelSerializer):
+class GraderQualifiactionPublicResult(ModelSerializer):
     course = SerializerMethodField()
-    answers = SerializerMethodField()
+    scores = SerializerMethodField()
+
     class Meta:
-        model = Qualification
+        model = CampaignPartyRelation
         fields = [
             'course',
-            'answers'
+            'scores'
         ]
 
     def get_course(self, obj):
-        return obj.dst.course_data.course_group.course.title
+        return obj.campaign.course_data.course_group.course.title
 
-    def get_answers(self, obj):
-        answers = []
-        return answers
+    def get_scores(self, obj):
+        scores = []
+        if not QA.objects.filter(
+                qualification__dst=obj
+        ).exists():
+            return []
+
+        # Hard coded here. probably a problem in design
+        qform = QualificationForm.objects.first()  # TODO: Fix it
+        
+        for qfr in qform.questions.filter(question__type=QuestionType.TYPE_NUMBER):
+            ans_qs = QA.objects.filter(
+                                question=qfr,
+                                qualification__dst=obj
+                            )
+            scores.append(
+                {
+                    'question': qfr.question.body,
+                    'answer': sum(
+                        [
+                            int(ans.answer) for ans in ans_qs
+                        ]
+                    ) / ans_qs.count(),
+                    'count': ans_qs.count()
+                }
+            )
+        return scores
