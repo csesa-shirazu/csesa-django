@@ -10,12 +10,14 @@ from qualification.models import Qualification, QuestionType, QualificationForm,
 class GraderQualifiactionPublicResult(ModelSerializer):
     course = SerializerMethodField()
     scores = SerializerMethodField()
+    participant_count = SerializerMethodField()
 
     class Meta:
         model = CampaignPartyRelation
         fields = [
             'course',
-            'scores'
+            'scores',
+            'participant_count'
         ]
 
     def get_course(self, obj):
@@ -30,12 +32,12 @@ class GraderQualifiactionPublicResult(ModelSerializer):
 
         # Hard coded here. probably a problem in design
         qform = QualificationForm.objects.first()  # TODO: Fix it
-        
+
         for qfr in qform.questions.filter(question__type=QuestionType.TYPE_NUMBER):
             ans_qs = QA.objects.filter(
-                                question=qfr,
-                                qualification__dst=obj
-                            )
+                question=qfr,
+                qualification__dst=obj
+            )
             scores.append(
                 {
                     'question': qfr.question.body,
@@ -44,7 +46,11 @@ class GraderQualifiactionPublicResult(ModelSerializer):
                             int(ans.answer) for ans in ans_qs
                         ]
                     ) / ans_qs.count(),
-                    'count': ans_qs.count()
+                    'count': ans_qs.count(),
+                    'coeff': qfr.question.coeff
                 }
             )
         return scores
+
+    def get_participant_count(self, obj):
+        return Qualification.objects.filter(dst=obj).count()
