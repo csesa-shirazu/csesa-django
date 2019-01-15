@@ -9,13 +9,13 @@ from rest_framework.permissions import (
 from campaigns.models import CampaignPartyRelation
 from qualification.models import Qualification
 from .serializers import (
-    QualifiactionResult
+    GraderQualifiactionResult
 )
 
 from users.models import User
 
 class QualifiactionResultAPIView(ListAPIView):
-    serializer_class = QualifiactionResult
+    serializer_class = GraderQualifiactionResult
     permission_classes = [AllowAny]
     lookup_field = ['slug']
 

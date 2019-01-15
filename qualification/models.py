@@ -47,8 +47,10 @@ class QuestionQualificationRelation(models.Model):
     form = models.ForeignKey(to=QualificationForm, on_delete=models.CASCADE, related_name="questions")
     question = models.ForeignKey(to=Question, on_delete=models.CASCADE, related_name="forms")
     place = models.IntegerField()
+
     def __str__(self):
         return str(self.form) + " | " + str(self.question)
+
 
 class QA(models.Model):
     qualification = models.ForeignKey(to=Qualification, on_delete=models.CASCADE, related_name="answers")
