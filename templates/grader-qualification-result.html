@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.21/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
+    <title>Title</title>
+</head>
+<body>
+
+<div id="app">
+{% verbatim %}
+    <div v-if="loading">
+        loading
+    </div>
+    <div v-else>
+        <div v-for="qualification in apidata">
+            {{ qualification.course }}
+            <div v-for="score in qualification.scores">
+                {{ score.question }} | {{ score.answer }} | {{ score.count }}
+            </div>
+        </div>
+    </div>
+{% endverbatim %}
+</div>
+
+<script>
+
+    new Vue({
+        el: "#app",
+        data: {
+            apidata : [
+            ],
+            loading: true,
+        },
+        methods: {
+            getData: function(){
+                let vinst = this;
+                axios.get('/api/v1/qualification/result/{{ slug }}/{{ username }}')
+                  .then(function (response) {
+                    vinst.loading = false;
+                    vinst.apidata = response.data;
+
+                  })
+                  .catch(function (error) {
+
+                    console.log(error);
+
+                  })
+            }
+        },
+        mounted: function(){
+            this.getData();
+        }
+    });
+</script>
+
+</body>
+</html>

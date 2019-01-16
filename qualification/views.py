@@ -141,3 +141,12 @@ class qualification_view(View):
             return redirect(reverse('users:login') + "?next=" + request.path_info)
 
 # Create your views here.
+class result_view(View):
+    template_name = 'grader-qualification-result.html'
+
+    def get(self, request, slug=None, username=None, *args, **kwargs):
+        context = {
+            'slug': slug,
+            'username': username
+        }
+        return render(request, self.template_name, context)
