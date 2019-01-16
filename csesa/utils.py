@@ -6,6 +6,7 @@ from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, C
 from csecourses.models import CSECourse, CSECourseGroup, CSECourseGroupTerm, CSETerm
 from users.models import Profile, User
 
+
 def rand_string():
     pas = ""
     for i in range(5):
@@ -66,6 +67,7 @@ def read_teachers():
                 type=CampaignPartyRelationType.GRADER
             )
 
+
 # Temporary and bad function!
 def read_courses(stdno):
     u = User.objects.get(username=stdno)
@@ -99,3 +101,20 @@ def read_courses(stdno):
                 content_object=p,
                 type=CampaignPartyRelationType.STUDENT
             )
+
+
+def arabic_chars_to_persian(ar_str):
+    return ar_str.replace('ك', 'ک').replace('ي', 'ی')
+
+
+def get_user_profile_names():
+    for user in User.objects.all():
+        p = user.profile.first()
+        if not p.first_name:
+            if 'دکتر' in user.first_name:
+                user.first_name = user.first_name[5:]
+                user.save()
+                p.prefix = 'دکتر'
+            p.first_name = arabic_chars_to_persian(user.first_name)
+            p.last_name = arabic_chars_to_persian(user.last_name)
+            p.save()
