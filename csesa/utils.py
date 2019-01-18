@@ -114,7 +114,7 @@ def get_user_profile_names():
             if 'دکتر' in user.first_name:
                 user.first_name = user.first_name[5:]
                 user.save()
-                p.prefix = 'دکتر'
+                p.name_prefix = 'دکتر'
             p.first_name = arabic_chars_to_persian(user.first_name)
             p.last_name = arabic_chars_to_persian(user.last_name)
             p.save()
