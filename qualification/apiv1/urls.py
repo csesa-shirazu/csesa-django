@@ -5,5 +5,5 @@ from .views import (
 )
 app_name = 'qualification-api-v1'
 urlpatterns = [
-    path('result/<slug:slug>/<str:username>', QualifiactionResultAPIView.as_view(), name='form'),
+    path('result/<slug:slug>/<int:profile_id>', QualifiactionResultAPIView.as_view(), name='form'),
 ]

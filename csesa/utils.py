@@ -118,3 +118,10 @@ def get_user_profile_names():
             p.first_name = arabic_chars_to_persian(user.first_name)
             p.last_name = arabic_chars_to_persian(user.last_name)
             p.save()
+def set_teacher_campaign_relations():
+    for user in User.objects.all():
+        p = user.profile.first()
+        if p.name_prefix == 'دکتر':
+            for cpr in p.campaign_relations.all():
+                cpr.type = CampaignPartyRelationType.TEACHER
+                cpr.save()

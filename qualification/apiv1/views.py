@@ -12,7 +12,7 @@ from .serializers import (
     GraderQualifiactionPublicResult
 )
 
-from users.models import User
+from users.models import User, Profile
 
 
 class QualifiactionResultAPIView(ListAPIView):
@@ -21,7 +21,7 @@ class QualifiactionResultAPIView(ListAPIView):
     lookup_field = ['slug']
 
     def get_queryset(self, *args, **kwargs):
-        profile = User.objects.get(username=self.kwargs['username']).profile.first()
+        profile = Profile.objects.get(id=self.kwargs['profile_id'])
 
         queryset_list = CampaignPartyRelation.objects.filter(
             campaign_relations_profiles=profile,

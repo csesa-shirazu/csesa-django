@@ -40,12 +40,12 @@ class GraderQualifiactionPublicResult(ModelSerializer):
             )
             scores.append(
                 {
-                    'question': qfr.question.body,
+                    'question': qfr.question.result_body,
                     'answer': sum(
                         [
                             int(ans.answer) for ans in ans_qs
                         ]
-                    ) / ans_qs.count(),
+                    ) // ans_qs.count(),
                     'count': ans_qs.count(),
                     'coeff': qfr.question.coeff
                 }

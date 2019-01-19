@@ -6,6 +6,7 @@ from rest_framework.serializers import (
 )
 
 from campaigns.models import Campaign, CampaignPartyRelation
+from csecourses.models import CSECourseGroup
 from csecourses.serializers import CSECourseGroupTermSerializer
 from users.serializers import ProfileRetrieveSerializer
 
@@ -30,6 +31,7 @@ class CampaignAsCourseSerializer(EnumSupportSerializerMixin, ModelSerializer):
 class CampaignAsCourseSimpleSerializer(EnumSupportSerializerMixin, ModelSerializer):
     title = SerializerMethodField()
     group = SerializerMethodField()
+    multi_group = SerializerMethodField()
 
     class Meta:
         model = Campaign
@@ -37,6 +39,7 @@ class CampaignAsCourseSimpleSerializer(EnumSupportSerializerMixin, ModelSerializ
             'id',
             'title',
             'group',
+            'multi_group'
         ]
 
     def get_title(self, obj: Campaign):
@@ -44,6 +47,11 @@ class CampaignAsCourseSimpleSerializer(EnumSupportSerializerMixin, ModelSerializ
 
     def get_group(self, obj: Campaign):
         return obj.course_data.course_group.group
+
+    def get_multi_group(self, obj: Campaign):
+        return CSECourseGroup.objects.filter(
+            course=obj.course_data.course_group.course
+        ).count() > 1
 
 
 class GraderRelationSerializer(EnumSupportSerializerMixin, ModelSerializer):

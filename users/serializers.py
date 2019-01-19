@@ -30,3 +30,12 @@ class ProfileRetrieveSerializer(ModelSerializer):
             'user',
             'campaign_relations'
         ]
+
+class ProfileRetrieveSimpleSerializer(ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = [
+            'id',
+            'first_name',
+            'last_name'
+        ]
