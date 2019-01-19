@@ -13,11 +13,12 @@ from users.serializers import ProfileRetrieveSerializer, ProfileRetrieveSimpleSe
 
 
 def index_view(request):
-    if request.user.is_authenticated:
-        return redirect(reverse('qualification:form', kwargs={'slug': 'cse-gradery'}))
-    else:
-        return redirect(
-            reverse('users:login') + "?next=" + reverse('qualification:form', kwargs={'slug': 'cse-gradery'}))
+    return redirect(reverse('qualification:result', kwargs={'slug': 'cse-gradery'}))
+    # if request.user.is_authenticated:
+    #     return redirect(reverse('qualification:form', kwargs={'slug': 'cse-gradery'}))
+    # else:
+    #     return redirect(
+    #         reverse('users:login') + "?next=" + reverse('qualification:form', kwargs={'slug': 'cse-gradery'}))
 
 
 def graders_view(request):
