@@ -4,6 +4,7 @@ from rest_framework.serializers import (
 )
 
 from campaigns.models import CampaignPartyRelation
+from csecourses.models import CSECourseGroup
 from qualification.models import Qualification, QuestionType, QualificationForm, QA
 
 
@@ -21,6 +22,11 @@ class GraderQualifiactionPublicResult(ModelSerializer):
         ]
 
     def get_course(self, obj):
+
+        if CSECourseGroup.objects.filter(
+            course=obj.course_data.course_group.course
+        ).count() > 1:
+            return obj.campaign.course_data.course_group.course.title + ' گروه ' + str(obj.campaign.course_data.course_group.group)
         return obj.campaign.course_data.course_group.course.title
 
     def get_scores(self, obj):
