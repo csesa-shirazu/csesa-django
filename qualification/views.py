@@ -144,9 +144,8 @@ class qualification_view(View):
 class result_view(View):
     template_name = 'grader-qualification-result.html'
 
-    def get(self, request, slug=None, username=None, *args, **kwargs):
+    def get(self, request, slug=None, *args, **kwargs):
         context = {
-            'slug': slug,
-            'username': username
+            'slug': slug
         }
         return render(request, self.template_name, context)

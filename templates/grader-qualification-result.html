@@ -1,59 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.21/vue.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
-    <title>Title</title>
-</head>
-<body>
+<html lang="en"><!DOCTYPE html>
+<html lang="fa">
 
-<div id="app">
-{% verbatim %}
-    <div v-if="loading">
-        loading
-    </div>
-    <div v-else>
-        <div v-for="qualification in apidata">
-            {{ qualification.course }}
-            <div v-for="score in qualification.scores">
-                {{ score.question }} | {{ score.answer }} | {{ score.count }}
-            </div>
-        </div>
-    </div>
-{% endverbatim %}
-</div>
+  <head>
 
-<script>
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta charset="UTF-8">
+      <title>انجمن علمی کامپیوتر</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    new Vue({
-        el: "#app",
-        data: {
-            apidata : [
-            ],
-            loading: true,
-        },
-        methods: {
-            getData: function(){
-                let vinst = this;
-                axios.get('/api/v1/qualification/result/{{ slug }}/{{ username }}')
-                  .then(function (response) {
-                    vinst.loading = false;
-                    vinst.apidata = response.data;
+      <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
 
-                  })
-                  .catch(function (error) {
+      <script src="https://code.jquery.com/jquery-3.3.1.min.js"> </script>
 
-                    console.log(error);
+      <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
-                  })
-            }
-        },
-        mounted: function(){
-            this.getData();
-        }
-    });
-</script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 
-</body>
+  </head>
+
+  <body>
+    <div id="navcomponent"></div>
+    <div id="app"></div>
+    <script src="/static/js/build.js"></script>
+  </body>
 </html>
