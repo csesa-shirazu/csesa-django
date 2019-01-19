@@ -44,14 +44,18 @@ class GraderQualifiactionPublicResult(ModelSerializer):
                 question=qfr,
                 qualification__dst=obj
             )
-            scores.append(
-                {
-                    'question': qfr.question.result_body,
-                    'answer': sum(
+            if ans_qs.exists():
+                ans_num = sum(
                         [
                             int(ans.answer) for ans in ans_qs
                         ]
-                    ) // ans_qs.count(),
+                    ) // ans_qs.count()
+            else:
+                ans_num = 0
+            scores.append(
+                {
+                    'question': qfr.question.result_body,
+                    'answer': ans_num,
                     'count': ans_qs.count(),
                     'coeff': qfr.question.coeff
                 }
