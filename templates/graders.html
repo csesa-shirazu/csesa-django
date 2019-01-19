@@ -36,6 +36,9 @@
     <table>
         <thead>
             <th>
+                profile id
+            </th>
+            <th>
                 نام
             </th>
             <th>
@@ -54,6 +57,9 @@
         <tbody>
             {% for gcr in gcrs %}
             <tr>
+                <td>
+                    {{ gcr.content_object.id }}
+                </td>
                 <td>
                     {{ gcr.content_object.user.first_name }}
                 </td>
