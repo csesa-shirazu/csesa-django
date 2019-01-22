@@ -93,8 +93,14 @@ class CampaignPartyRelationType(Enum):  # A subclass of Enum
     STUDENT = "student"
     TEACHER = "teacher"
     GRADER = "grader"
+    GRADERY_REQUESTED = "graderreq" #TODO: remove this after stable changes
     MANAGER = "manager"
     MEMBER = "member"
+
+class CampaignPartyRelationStatus(Enum):  # A subclass of Enum
+    APPROVED = "approved"
+    PENDING = "pending"
+    REJECTED = "rejected"
 
 
 class CampaignPartyRelation(models.Model):
@@ -106,6 +112,7 @@ class CampaignPartyRelation(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     type = EnumField(CampaignPartyRelationType, max_length=1000)
+    status = EnumField(CampaignPartyRelationStatus, max_length=1000)
 
     def __str__(self):
         return str(self.content_object) + " | " + str(self.campaign)

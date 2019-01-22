@@ -25,7 +25,8 @@ class QualifiactionResultAPIView(ListAPIView):
 
         queryset_list = CampaignPartyRelation.objects.filter(
             campaign_relations_profiles=profile,
-            type=CampaignPartyRelationType.GRADER
-        )
+            type=CampaignPartyRelationType.GRADER,
+            dst_qualifications__isnull=False
+        ).distinct()
 
         return queryset_list

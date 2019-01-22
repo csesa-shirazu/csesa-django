@@ -26,12 +26,13 @@ urlpatterns = [
   path('', views.index_view, name='index'),
   path('graders/', views.graders_view, name='graders'),
   path('admin/', admin.site.urls),
-  path('user/', include('users.urls', namespace='users')),
+  # path('user/', include('users.urls', namespace='users')),
   path('board/', include('telegramboard.urls', namespace='telegramboard')),
   path('qualification/', include('qualification.urls', namespace='qualification')),
-  path('api/v1/qualification/', include('qualification.apiv1.urls', namespace='qualification-api-v1')),
 
-  path('api/v1/courses-data/', views.GradersAndCoursesAPIView.as_view(), name='cse-course-data'),
+  path('api/v1/user/', include('users.urls', namespace='users')),
+  path('api/v1/qualification/', include('qualification.apiv1.urls', namespace='qualification-api-v1')),
+  path('api/v1/graders-with-qualification/', views.GradersWithQualificationAPIView.as_view(), name='graders-with-qualification'),
 ]
 
 

@@ -66,21 +66,17 @@ def graders_view(request):
     raise Http404
 
 
-class GradersAndCoursesAPIView(APIView):
+class GradersWithQualificationAPIView(APIView):
     authentication_class = []  # Don't forget to add a 'comma' after first element to make it a tuple
 
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
-        data = {
-            'courses': CampaignAsCourseSimpleSerializer(
-                Campaign.objects.filter(course_data__isnull=False)
-                , many=True).data,
-            'graders': ProfileRetrieveSimpleSerializer(
-                Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
-                    content_type=ContentType.objects.get(model='profile'),
-                    type=CampaignPartyRelationType.GRADER
-                ).all()).distinct().order_by('-id'), many=True).data
-        }
+        data = ProfileRetrieveSimpleSerializer(
+        Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
+            content_type=ContentType.objects.get(model='profile'),
+            type=CampaignPartyRelationType.GRADER,
+            dst_qualifications__isnull=False
+        ).all()).distinct().order_by('-id'), many=True).data
 
         return Response(data)
