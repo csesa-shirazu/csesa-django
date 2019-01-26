@@ -34,6 +34,8 @@ class Campaign(models.Model):
                                     blank=True,
                                     null=True)
 
+    type = EnumField(CampaignType, max_length=1000)
+
     @property
     def students(self):
         return ProfileRetrieveSerializer(
@@ -54,7 +56,9 @@ class Campaign(models.Model):
 
     @property
     def name(self):
-        if self.course_data:
+        if self.title:
+            return self.title
+        elif self.course_data:
             return str(self.course_data)
         return ""
 
