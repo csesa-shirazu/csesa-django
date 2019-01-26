@@ -23,37 +23,16 @@ class CampaignType(Enum):
 
 
 class Campaign(models.Model):
+    """
+        Part of my own design pattern. For describing any works
+        and acts done by people. for example, A specific course
+        in a specific term that has a teacher, some graders and
+        some students
+    """
     course_data = models.ForeignKey(to="csecourses.CSECourseGroupTerm",
                                     on_delete=models.CASCADE,
                                     blank=True,
                                     null=True)
-
-    title = models.CharField(max_length=10000, blank=True, null=True)
-
-    type = EnumField(CampaignType, max_length=1000)
-
-    slug = models.SlugField(blank=True, null=True)
-
-    image = ImageField(upload_to=campaign_image_upload_location,
-                       null=True,
-                       blank=True,
-                       width_field="width_field",
-                       height_field="height_field")
-
-    banner_image = models.ImageField(upload_to=campaign_image_upload_location,
-                                     null=True,
-                                     blank=True,
-                                     width_field="banner_width_field",
-                                     height_field="banner_height_field")
-
-    width_field = models.IntegerField(default=0)
-    height_field = models.IntegerField(default=0)
-    banner_width_field = models.IntegerField(default=0)
-    banner_height_field = models.IntegerField(default=0)
-
-    description = models.TextField(blank=True, null=True)
-
-    duration_days = models.IntegerField(blank=True, null=True)
 
     @property
     def students(self):
@@ -75,17 +54,12 @@ class Campaign(models.Model):
 
     @property
     def name(self):
-        if self.title:
-            return self.title
-        elif self.course_data:
+        if self.course_data:
             return str(self.course_data)
         return ""
 
     def __str__(self):
         return self.name
-
-    class Meta:
-        unique_together = ("slug", "type")
 
 
 class CampaignPartyRelationType(Enum):  # A subclass of Enum
@@ -93,7 +67,7 @@ class CampaignPartyRelationType(Enum):  # A subclass of Enum
     STUDENT = "student"
     TEACHER = "teacher"
     GRADER = "grader"
-    GRADERY_REQUESTED = "graderreq" #TODO: remove this after stable changes
+    GRADERY_REQUESTED = "grader_new" #TODO: remove this after stable changes
     MANAGER = "manager"
     MEMBER = "member"
 
@@ -105,6 +79,8 @@ class CampaignPartyRelationStatus(Enum):  # A subclass of Enum
 
 class CampaignPartyRelation(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='cprelations')
+
+    enrollment_request_note = models.TextField(blank=True, null=True)
 
     # party
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

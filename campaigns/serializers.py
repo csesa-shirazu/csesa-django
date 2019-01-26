@@ -63,3 +63,10 @@ class GraderRelationSerializer(EnumSupportSerializerMixin, ModelSerializer):
             'campaign',
             'content_object'
         ]
+
+class CampaignGraderyRequestSerializer(EnumSupportSerializerMixin, ModelSerializer):
+    class Meta:
+        model = CampaignPartyRelation
+        fileds = [
+            'enrollment_request_note'
+        ]

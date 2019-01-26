@@ -2,14 +2,19 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from rest_framework.permissions import AllowAny
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign
-from campaigns.serializers import GraderRelationSerializer, CampaignAsCourseSimpleSerializer
+from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign, CampaignPartyRelationStatus
+from campaigns.serializers import GraderRelationSerializer, CampaignAsCourseSimpleSerializer, \
+    CampaignGraderyRequestSerializer
+from csecourses.models import CSECourseGroupTerm, CSECourseGroup, CSETerm
 from users.models import User, Profile
 from users.serializers import ProfileRetrieveSerializer, ProfileRetrieveSimpleSerializer
+from rest_framework.generics import CreateAPIView
 
 
 def index_view(request):
@@ -73,10 +78,58 @@ class GradersWithQualificationAPIView(APIView):
 
     def get(self, request, format=None):
         data = ProfileRetrieveSimpleSerializer(
-        Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
-            content_type=ContentType.objects.get(model='profile'),
-            type=CampaignPartyRelationType.GRADER,
-            dst_qualifications__isnull=False
-        ).all()).distinct().order_by('-id'), many=True).data
+            Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
+                content_type=ContentType.objects.get(model='profile'),
+                type=CampaignPartyRelationType.GRADER,
+                dst_qualifications__isnull=False
+            ).all()).distinct().order_by('-id'), many=True).data
 
         return Response(data)
+
+class GradersWithQualificationAPIView(APIView):
+    authentication_class = []  # Don't forget to add a 'comma' after first element to make it a tuple
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        data = ProfileRetrieveSimpleSerializer(
+            Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
+                content_type=ContentType.objects.get(model='profile'),
+                type=CampaignPartyRelationType.GRADER,
+                dst_qualifications__isnull=False
+            ).all()).distinct().order_by('-id'), many=True).data
+
+        return Response(data)
+
+
+class GraderyRequestAPIView(CreateAPIView):
+    serializer_class = CampaignGraderyRequestSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def perform_create(self, serializer):
+        profile = self.request.user.profile.first()
+
+        try:
+            obj = Campaign.objects.get(
+                course_data=CSECourseGroupTerm.objects.get(
+                    course_group=CSECourseGroup.objects.get(
+                        pk=self.kwargs['pk']
+                    ),
+                    term=CSETerm.objects.last()
+                )
+            )
+        except:
+            raise Http404
+        if (CampaignPartyRelation.objects.filter(
+                campaign=obj,
+                content_type=ContentType.objects.get(model="profile"),
+                object_id=profile.id
+        ).exists()):
+            raise ValidationError("Already requested")
+        serializer.save(
+            campaign=obj,
+            content_object=profile,
+            type=CampaignPartyRelationType.GRADER,
+            status=CampaignPartyRelationStatus.PENDING
+        )
