@@ -86,18 +86,19 @@ class GradersWithQualificationAPIView(APIView):
 
         return Response(data)
 
-class GradersWithQualificationAPIView(APIView):
+class CourseGroupListAPIView(APIView):
     authentication_class = []  # Don't forget to add a 'comma' after first element to make it a tuple
 
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
-        data = ProfileRetrieveSimpleSerializer(
-            Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
-                content_type=ContentType.objects.get(model='profile'),
-                type=CampaignPartyRelationType.GRADER,
-                dst_qualifications__isnull=False
-            ).all()).distinct().order_by('-id'), many=True).data
+        data = [
+            {
+                'id': course_group.id,
+                'title': str(course_group),
+            }
+            for course_group in CSECourseGroup.objects.all()
+        ]
 
         return Response(data)
 

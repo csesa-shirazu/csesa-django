@@ -12,11 +12,13 @@ class CSECourse(models.Model):
 
 
 class CSECourseGroup(models.Model):
-    course = models.ForeignKey(to=CSECourse, on_delete=models.CASCADE)
+    course = models.ForeignKey(to=CSECourse, on_delete=models.CASCADE, related_name="groups")
     group = models.IntegerField(default=1)
 
     def __str__(self):
-        return str(self.course) + " | " + str(self.group)
+        if self.course.groups.count() > 1:
+            return str(self.course) + " گروه " + str(self.group)
+        return str(self.course)
 
 
 class CSETerm(models.Model):
