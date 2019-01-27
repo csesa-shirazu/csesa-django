@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,9 +13,10 @@ from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, C
 from campaigns.serializers import GraderRelationSerializer, CampaignAsCourseSimpleSerializer, \
     CampaignGraderyRequestSerializer
 from csecourses.models import CSECourseGroupTerm, CSECourseGroup, CSETerm
+from csesa.serializers import GraderOfCourseRelationSerializer
+from csesa.utils import arabic_chars_to_persian, get_prev_term, get_cur_term
 from users.models import User, Profile
-from users.serializers import ProfileRetrieveSerializer, ProfileRetrieveSimpleSerializer
-from rest_framework.generics import CreateAPIView
+from users.serializers import ProfileRetrieveSimpleSerializer
 
 
 def index_view(request):
@@ -86,6 +88,7 @@ class GradersWithQualificationAPIView(APIView):
 
         return Response(data)
 
+
 class CourseGroupListAPIView(APIView):
     authentication_class = []  # Don't forget to add a 'comma' after first element to make it a tuple
 
@@ -95,10 +98,64 @@ class CourseGroupListAPIView(APIView):
         data = [
             {
                 'id': course_group.id,
-                'title': str(course_group),
+                'title_fa': arabic_chars_to_persian(str(course_group)),
             }
             for course_group in CSECourseGroup.objects.all()
         ]
+
+        return Response(data)
+
+
+class CourseGroupTAsAPIView(APIView):
+    authentication_class = []  # Don't forget to add a 'comma' after first element to make it a tuple
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk=None, format=None):
+        try:
+            course_group = CSECourseGroup.objects.get(pk=pk)
+        except:
+            raise Http404
+        print(pk)
+
+        try:
+            course_data = CSECourseGroupTerm.objects.get(
+                course_group=course_group,
+                term=get_prev_term()
+            )
+        except:
+            prev_term_graders = []
+        else:
+            prev_term_graders = GraderOfCourseRelationSerializer(
+                CampaignPartyRelation.objects.filter(
+                    campaign=Campaign.objects.get(course_data=course_data),
+                    content_type=ContentType.objects.get(model='profile'),
+                    type=CampaignPartyRelationType.GRADER
+                ).all(), many=True).data
+
+        try:
+            course_data = CSECourseGroupTerm.objects.get(
+                course_group=course_group,
+                term=get_cur_term()
+            )
+        except:
+            cur_term_graders = []
+        else:
+            cur_term_graders = GraderOfCourseRelationSerializer(
+                CampaignPartyRelation.objects.filter(
+                    campaign=Campaign.objects.get(course_data=course_data),
+                    content_type=ContentType.objects.get(model='profile'),
+                    type=CampaignPartyRelationType.GRADER
+                ).all(), many=True).data
+
+        data = {
+            'course_group': {
+                'id': course_group.id,
+                'title_fa': arabic_chars_to_persian(str(course_group)),
+            },
+            'prev_term_graders': prev_term_graders,
+            'cur_term_graders': cur_term_graders
+        }
 
         return Response(data)
 
@@ -131,6 +188,6 @@ class GraderyRequestAPIView(CreateAPIView):
         serializer.save(
             campaign=obj,
             content_object=profile,
-            type=CampaignPartyRelationType.GRADER,
+            type=CampaignPartyRelationType.GRADERY,
             status=CampaignPartyRelationStatus.PENDING
         )

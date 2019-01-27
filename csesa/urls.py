@@ -19,8 +19,8 @@ from django.urls import include
 from django.urls import path
 
 from csesa import settings
-from csesa.bot_utils import bot_loop
-from csesa.views import GraderyRequestAPIView
+# from csesa.bot_utils import bot_loop
+from csesa.views import GraderyRequestAPIView, CourseGroupTAsAPIView
 from . import views
 
 urlpatterns = [
@@ -35,7 +35,8 @@ urlpatterns = [
   path('api/v1/qualification/', include('qualification.apiv1.urls', namespace='qualification-api-v1')),
   path('api/v1/graders-with-qualification/', views.GradersWithQualificationAPIView.as_view(), name='graders-with-qualification'),
   path('api/v1/course-groups/', views.CourseGroupListAPIView.as_view(), name='graders-with-qualification'),
-  path('api/v1/<int:pk>/request-enrollment/', GraderyRequestAPIView.as_view(), name='gradery-request'),
+  path('api/v1/course-group-tas/<int:pk>', CourseGroupTAsAPIView.as_view(), name='gradery-request'),
+  path('api/v1/gradery-request/<int:pk>/', GraderyRequestAPIView.as_view(), name='gradery-request'),
 ]
 
 

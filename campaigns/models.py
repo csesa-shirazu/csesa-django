@@ -71,7 +71,6 @@ class CampaignPartyRelationType(Enum):  # A subclass of Enum
     STUDENT = "student"
     TEACHER = "teacher"
     GRADER = "grader"
-    GRADERY_REQUESTED = "grader_new" #TODO: remove this after stable changes
     MANAGER = "manager"
     MEMBER = "member"
 
