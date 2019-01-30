@@ -174,7 +174,7 @@ class GraderyRequestAPIView(CreateAPIView):
                     course_group=CSECourseGroup.objects.get(
                         pk=self.kwargs['pk']
                     ),
-                    term=CSETerm.objects.last()
+                    term=get_cur_term()
                 )
             )
         except:
@@ -188,6 +188,6 @@ class GraderyRequestAPIView(CreateAPIView):
         serializer.save(
             campaign=obj,
             content_object=profile,
-            type=CampaignPartyRelationType.GRADERY,
+            type=CampaignPartyRelationType.GRADER,
             status=CampaignPartyRelationStatus.PENDING
         )

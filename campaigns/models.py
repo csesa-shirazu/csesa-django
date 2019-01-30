@@ -56,9 +56,7 @@ class Campaign(models.Model):
 
     @property
     def name(self):
-        if self.title:
-            return self.title
-        elif self.course_data:
+        if self.course_data:
             return str(self.course_data)
         return ""
 

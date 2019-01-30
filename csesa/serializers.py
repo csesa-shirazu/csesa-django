@@ -50,12 +50,11 @@ class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializ
                             int(ans.answer) for ans in ans_qs
                         ]
                     ) // ans_qs.count()
-            else:
-                ans_num = 0
-            ans_total += ans_num
-            coeff_total += qfr.question.coeff
+                ans_total += ans_num * qfr.question.coeff
+                coeff_total += qfr.question.coeff
+
         if coeff_total > 0:
-            return ans_total // coeff_total
+            return (ans_total // coeff_total) + ((ans_total / coeff_total * 10) % 10 > 5)
         return 0
 
     def get_participant_count(self, obj):
