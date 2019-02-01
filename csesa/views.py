@@ -2,17 +2,20 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.utils import json
 from rest_framework.views import APIView
 
 from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign, CampaignPartyRelationStatus
 from campaigns.serializers import GraderRelationSerializer, CampaignAsCourseSimpleSerializer, \
     CampaignGraderyRequestSerializer
 from csecourses.models import CSECourseGroupTerm, CSECourseGroup, CSETerm
+from csesa.permissions import IsOwnerOfCampaignPartyRelationOrReadOnly
 from csesa.serializers import GraderOfCourseRelationSerializer
 from csesa.utils import arabic_chars_to_persian, get_prev_term, get_cur_term
 from users.models import User, Profile
@@ -107,8 +110,7 @@ class CourseGroupListAPIView(APIView):
 
 
 class CourseGroupTAsAPIView(APIView):
-    authentication_class = []  # Don't forget to add a 'comma' after first element to make it a tuple
-
+    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
 
     def get(self, request, pk=None, format=None):
@@ -118,35 +120,47 @@ class CourseGroupTAsAPIView(APIView):
             raise Http404
         print(pk)
 
+        serializer_context = {'request': request}
+
         try:
             course_data = CSECourseGroupTerm.objects.get(
                 course_group=course_group,
                 term=get_prev_term()
             )
+            prev_campaign = Campaign.objects.get(course_data=course_data)
         except:
             prev_term_graders = []
         else:
             prev_term_graders = GraderOfCourseRelationSerializer(
                 CampaignPartyRelation.objects.filter(
-                    campaign=Campaign.objects.get(course_data=course_data),
+                    campaign=prev_campaign,
                     content_type=ContentType.objects.get(model='profile'),
                     type=CampaignPartyRelationType.GRADER
-                ).all(), many=True).data
+                ).all(), context=serializer_context, many=True).data
 
         try:
             course_data = CSECourseGroupTerm.objects.get(
                 course_group=course_group,
                 term=get_cur_term()
             )
+            cur_campaign = Campaign.objects.get(course_data=course_data)
         except:
             cur_term_graders = []
+            is_teacher = False
         else:
             cur_term_graders = GraderOfCourseRelationSerializer(
                 CampaignPartyRelation.objects.filter(
-                    campaign=Campaign.objects.get(course_data=course_data),
+                    campaign=cur_campaign,
                     content_type=ContentType.objects.get(model='profile'),
                     type=CampaignPartyRelationType.GRADER
-                ).all(), many=True).data
+                ).all(), context=serializer_context, many=True).data
+
+            is_teacher = request.user.is_authenticated and CampaignPartyRelation.objects.filter(
+                campaign=cur_campaign,
+                content_type=ContentType.objects.get(model="profile"),
+                object_id=request.user.profile.first().id,
+                type=CampaignPartyRelationType.TEACHER
+            ).exists()
 
         data = {
             'course_group': {
@@ -154,7 +168,8 @@ class CourseGroupTAsAPIView(APIView):
                 'title_fa': arabic_chars_to_persian(str(course_group)),
             },
             'prev_term_graders': prev_term_graders,
-            'cur_term_graders': cur_term_graders
+            'cur_term_graders': cur_term_graders,
+            'is_teacher': is_teacher
         }
 
         return Response(data)
@@ -164,6 +179,13 @@ class GraderyRequestAPIView(CreateAPIView):
     serializer_class = CampaignGraderyRequestSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        status = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({"result": "success"}, status=status, headers=headers)
 
     def perform_create(self, serializer):
         profile = self.request.user.profile.first()
@@ -179,15 +201,32 @@ class GraderyRequestAPIView(CreateAPIView):
             )
         except:
             raise Http404
-        if (CampaignPartyRelation.objects.filter(
+        cpr_qs = CampaignPartyRelation.objects.filter(
                 campaign=obj,
                 content_type=ContentType.objects.get(model="profile"),
-                object_id=profile.id
-        ).exists()):
-            raise ValidationError("Already requested")
-        serializer.save(
-            campaign=obj,
-            content_object=profile,
-            type=CampaignPartyRelationType.GRADER,
-            status=CampaignPartyRelationStatus.PENDING
+                object_id=profile.id,
+                type=CampaignPartyRelationType.GRADER,
         )
+        if (cpr_qs.exists()):
+            grader_cpr = cpr_qs.first()
+            if grader_cpr.status == CampaignPartyRelationStatus.PENDING:
+                print("hello")
+                grader_cpr.enrollment_request_note = serializer.validated_data['enrollment_request_note']
+                grader_cpr.save() #TODO: seperate update. VERY BAD IMPLEMENTATION JUST BECAUSE OF LACK OF TIME
+                return status.HTTP_202_ACCEPTED
+            raise ValidationError("Already requested")
+        else:
+            serializer.save(
+                campaign=obj,
+                content_object=profile,
+                type=CampaignPartyRelationType.GRADER,
+                status=CampaignPartyRelationStatus.PENDING
+            )
+            return status.HTTP_201_CREATED
+
+class DestroyGraderyRequestAPIView(DestroyAPIView):
+    serializer_class = CampaignGraderyRequestSerializer
+    lookup_field = 'id'
+    queryset = CampaignPartyRelation.objects.all()
+    permission_classes = [IsOwnerOfCampaignPartyRelationOrReadOnly]
+    authentication_classes = [TokenAuthentication]

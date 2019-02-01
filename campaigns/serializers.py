@@ -68,5 +68,6 @@ class CampaignGraderyRequestSerializer(EnumSupportSerializerMixin, ModelSerializ
     class Meta:
         model = CampaignPartyRelation
         fields = [
+            'id',
             'enrollment_request_note'
         ]

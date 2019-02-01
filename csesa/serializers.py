@@ -2,7 +2,7 @@ from enumfields.drf import EnumSupportSerializerMixin
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
-from campaigns.models import CampaignPartyRelation
+from campaigns.models import CampaignPartyRelation, CampaignPartyRelationStatus
 from csecourses.models import CSECourseGroup
 from qualification.models import QA, QualificationForm, Qualification, QuestionType
 
@@ -10,6 +10,8 @@ from qualification.models import QA, QualificationForm, Qualification, QuestionT
 class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializer):
     score = SerializerMethodField()
     grader_profile = SerializerMethodField()
+    accessable = SerializerMethodField()
+    enrollment_request_note = SerializerMethodField()
 
     class Meta:
         model = CampaignPartyRelation
@@ -18,7 +20,23 @@ class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializ
             'grader_profile',
             'status',
             'score',
+            'enrollment_request_note',
+            'accessable',
         ]
+
+
+    def get_accessable(self, obj):
+        if obj.status != CampaignPartyRelationStatus.PENDING:
+            return False
+        user = self.context.get('request').user
+        if user.is_authenticated and obj.content_object == user.profile.first():
+            return True
+        return False
+
+    def get_enrollment_request_note(self, obj):
+        if self.get_accessable(obj):
+            return obj.enrollment_request_note
+        return None
 
     def get_grader_profile(self, obj):
         return {
