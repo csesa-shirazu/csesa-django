@@ -120,8 +120,6 @@ class CourseGroupTAsAPIView(APIView):
             raise Http404
         print(pk)
 
-        serializer_context = {'request': request}
-
         try:
             course_data = CSECourseGroupTerm.objects.get(
                 course_group=course_group,
@@ -130,13 +128,26 @@ class CourseGroupTAsAPIView(APIView):
             prev_campaign = Campaign.objects.get(course_data=course_data)
         except:
             prev_term_graders = []
+            prev_is_teacher = False
         else:
+
+            prev_is_teacher = request.user.is_authenticated and CampaignPartyRelation.objects.filter(
+                campaign=prev_campaign,
+                content_type=ContentType.objects.get(model="profile"),
+                object_id=request.user.profile.first().id,
+                type=CampaignPartyRelationType.TEACHER
+            ).exists()
+
             prev_term_graders = GraderOfCourseRelationSerializer(
                 CampaignPartyRelation.objects.filter(
                     campaign=prev_campaign,
                     content_type=ContentType.objects.get(model='profile'),
                     type=CampaignPartyRelationType.GRADER
-                ).all(), context=serializer_context, many=True).data
+                ).all(), context={
+                    'request': request,
+                    'is_teacher': prev_is_teacher
+                }
+                , many=True).data
 
         try:
             course_data = CSECourseGroupTerm.objects.get(
@@ -148,12 +159,6 @@ class CourseGroupTAsAPIView(APIView):
             cur_term_graders = []
             is_teacher = False
         else:
-            cur_term_graders = GraderOfCourseRelationSerializer(
-                CampaignPartyRelation.objects.filter(
-                    campaign=cur_campaign,
-                    content_type=ContentType.objects.get(model='profile'),
-                    type=CampaignPartyRelationType.GRADER
-                ).all(), context=serializer_context, many=True).data
 
             is_teacher = request.user.is_authenticated and CampaignPartyRelation.objects.filter(
                 campaign=cur_campaign,
@@ -161,6 +166,17 @@ class CourseGroupTAsAPIView(APIView):
                 object_id=request.user.profile.first().id,
                 type=CampaignPartyRelationType.TEACHER
             ).exists()
+
+            cur_term_graders = GraderOfCourseRelationSerializer(
+                CampaignPartyRelation.objects.filter(
+                    campaign=cur_campaign,
+                    content_type=ContentType.objects.get(model='profile'),
+                    type=CampaignPartyRelationType.GRADER
+                ).all(), context={
+                    'request': request,
+                    'is_teacher': is_teacher
+                }, many=True).data
+
 
         data = {
             'course_group': {
@@ -202,17 +218,17 @@ class GraderyRequestAPIView(CreateAPIView):
         except:
             raise Http404
         cpr_qs = CampaignPartyRelation.objects.filter(
-                campaign=obj,
-                content_type=ContentType.objects.get(model="profile"),
-                object_id=profile.id,
-                type=CampaignPartyRelationType.GRADER,
+            campaign=obj,
+            content_type=ContentType.objects.get(model="profile"),
+            object_id=profile.id,
+            type=CampaignPartyRelationType.GRADER,
         )
         if (cpr_qs.exists()):
             grader_cpr = cpr_qs.first()
             if grader_cpr.status == CampaignPartyRelationStatus.PENDING:
                 print("hello")
                 grader_cpr.enrollment_request_note = serializer.validated_data['enrollment_request_note']
-                grader_cpr.save() #TODO: seperate update. VERY BAD IMPLEMENTATION JUST BECAUSE OF LACK OF TIME
+                grader_cpr.save()  # TODO: seperate update. VERY BAD IMPLEMENTATION JUST BECAUSE OF LACK OF TIME
                 return status.HTTP_202_ACCEPTED
             raise ValidationError("Already requested")
         else:
@@ -224,9 +240,53 @@ class GraderyRequestAPIView(CreateAPIView):
             )
             return status.HTTP_201_CREATED
 
+
 class DestroyGraderyRequestAPIView(DestroyAPIView):
     serializer_class = CampaignGraderyRequestSerializer
     lookup_field = 'id'
     queryset = CampaignPartyRelation.objects.all()
     permission_classes = [IsOwnerOfCampaignPartyRelationOrReadOnly]
     authentication_classes = [TokenAuthentication]
+
+
+class AcceptTAAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None, format=None):
+        try:
+            cpr = CampaignPartyRelation.objects.get(pk=pk)
+        except:
+            raise Http404
+        profile = request.user.profile.first()
+        if not CampaignPartyRelation.objects.filter(
+                campaign=cpr.campaign,
+                content_type=ContentType.objects.get(model='profile'),
+                object_id=profile.id,
+                type=CampaignPartyRelationType.TEACHER
+        ).exists():
+            return Response({'result': 'Not Allowed'}, status=status.HTTP_403_FORBIDDEN)
+        cpr.status = CampaignPartyRelationStatus.APPROVED
+        cpr.save()
+        return Response({'result': 'success'}, status=status.HTTP_200_OK)
+
+class RejectTAAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None, format=None):
+        try:
+            cpr = CampaignPartyRelation.objects.get(pk=pk)
+        except:
+            raise Http404
+        profile = request.user.profile.first()
+        if not CampaignPartyRelation.objects.filter(
+                campaign=cpr.campaign,
+                content_type=ContentType.objects.get(model='profile'),
+                object_id=profile.id,
+                type=CampaignPartyRelationType.TEACHER
+        ).exists():
+            return Response({'result': 'Not Allowed'}, status=status.HTTP_403_FORBIDDEN)
+        cpr.status = CampaignPartyRelationStatus.REJECTED
+        cpr.save()
+        return Response({'result': 'success'}, status=status.HTTP_200_OK)

@@ -30,7 +30,9 @@ class Profile(models.Model):
                                          related_query_name='campaign_relations_profiles')
 
     def __str__(self):
-        return str(self.user) + ' | ' + str(self.name_prefix) + ' ' + str(self.first_name) + ' ' + str(self.last_name)
+        if self.name_prefix:
+            return str(self.user) + ' | ' + str(self.name_prefix) + ' ' + str(self.first_name) + ' ' + str(self.last_name)
+        return str(self.user) + ' | ' + str(self.first_name) + ' ' + str(self.last_name)
     # No other data for now
 
 

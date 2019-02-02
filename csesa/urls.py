@@ -20,7 +20,8 @@ from django.urls import path
 
 from csesa import settings
 # from csesa.bot_utils import bot_loop
-from csesa.views import GraderyRequestAPIView, CourseGroupTAsAPIView, DestroyGraderyRequestAPIView
+from csesa.views import GraderyRequestAPIView, CourseGroupTAsAPIView, DestroyGraderyRequestAPIView, AcceptTAAPIView, \
+  RejectTAAPIView
 from . import views
 
 urlpatterns = [
@@ -39,6 +40,8 @@ urlpatterns = [
   path('api/v1/gradery-request/<int:pk>/', GraderyRequestAPIView.as_view(), name='gradery-request'),
                                     #^ pk is from course-group
   path('api/v1/cancel-gradery-request/<int:id>/', DestroyGraderyRequestAPIView.as_view(), name='cancel-gradery-request'),
+  path('api/v1/approve-gradery-request/<int:pk>/', AcceptTAAPIView.as_view(), name='approve-gradery-request'),
+  path('api/v1/reject-gradery-request/<int:pk>/', RejectTAAPIView.as_view(), name='reject-gradery-request'),
 ]
 
 

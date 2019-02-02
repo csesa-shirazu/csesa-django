@@ -26,7 +26,7 @@ class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializ
 
 
     def get_accessable(self, obj):
-        if obj.status != CampaignPartyRelationStatus.PENDING:
+        if obj.status == CampaignPartyRelationStatus.APPROVED:
             return False
         user = self.context.get('request').user
         if user.is_authenticated and obj.content_object == user.profile.first():
@@ -34,7 +34,8 @@ class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializ
         return False
 
     def get_enrollment_request_note(self, obj):
-        if self.get_accessable(obj):
+        user = self.context.get('request').user
+        if (user.is_authenticated and obj.content_object == user.profile.first()) or self.context.get('is_teacher'):
             return obj.enrollment_request_note
         return None
 
