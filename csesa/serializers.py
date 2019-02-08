@@ -12,6 +12,7 @@ class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializ
     grader_profile = SerializerMethodField()
     accessable = SerializerMethodField()
     enrollment_request_note = SerializerMethodField()
+    stdno = SerializerMethodField()
 
     class Meta:
         model = CampaignPartyRelation
@@ -21,6 +22,7 @@ class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializ
             'status',
             'score',
             'enrollment_request_note',
+            'stdno',
             'accessable',
         ]
 
@@ -37,6 +39,11 @@ class GraderOfCourseRelationSerializer(EnumSupportSerializerMixin, ModelSerializ
         user = self.context.get('request').user
         if (user.is_authenticated and obj.content_object == user.profile.first()) or self.context.get('is_teacher'):
             return obj.enrollment_request_note
+        return None
+
+    def get_stdno(self, obj): #TODO: correct this
+        if self.context.get('is_teacher'):
+            return obj.content_object.user.username
         return None
 
     def get_grader_profile(self, obj):
