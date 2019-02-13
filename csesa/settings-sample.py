@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'campaigns',
     'qualification',
     'users',
+    'resources',
 ]
 
 MIDDLEWARE = [

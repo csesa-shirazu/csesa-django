@@ -34,6 +34,10 @@ urlpatterns = [
 
   path('api/v1/user/', include('users.urls', namespace='users')),
   path('api/v1/qualification/', include('qualification.apiv1.urls', namespace='qualification-api-v1')),
+  path('api/v1/resources/', include('resources.urls', namespace='resources-api')),
+
+
+
   path('api/v1/graders-with-qualification/', views.GradersWithQualificationAPIView.as_view(), name='graders-with-qualification'),
   path('api/v1/course-groups/', views.CourseGroupListAPIView.as_view(), name='graders-with-qualification'),
   path('api/v1/course-group-tas/<int:pk>', CourseGroupTAsAPIView.as_view(), name='course-group-tas'),
