@@ -10,7 +10,6 @@ from .serializers import (
     DetailSerializer
 )
 from .models import Book
-from users.models import Profile
 
 
 class BookListAPIView(ListAPIView):

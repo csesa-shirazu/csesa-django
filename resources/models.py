@@ -3,7 +3,7 @@ from django.db import models
 
 class Book(models.Model):
     title = models.CharField(max_length=50)
-    author = models.ForeignKey("users.Profile", related_name="book", on_delete=models.CASCADE)
+    author = models.ManyToManyField("users.Profile", related_name="book")
 
 
 class Publisher(models.Model):
