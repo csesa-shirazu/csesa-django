@@ -31,6 +31,6 @@ class BookSuggestion(models.Model):
 
 
 class Recommendation(models.Model):
-    owner = models.ForeignKey('users.Profile', related_name='recommendations', on_delete=models.CASCADE)
+    owner = models.ForeignKey('users.Profile', related_name='recommendations', on_delete=models.CASCADE, null=True)
     text = models.TextField()
-    book = models.ForeignKey(Book, related_name='recommendations', on_delete=models.CASCADE)
+    book = models.ForeignKey(Detail, related_name='recommendations', on_delete=models.CASCADE)

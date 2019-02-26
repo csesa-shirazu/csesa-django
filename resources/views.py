@@ -7,9 +7,11 @@ from .serializers import (
     BookSerializer,
     BookCreateSerializer,
     DetailCreateSerializer,
-    DetailSerializer
+    DetailSerializer,
+    RecommendationCreateSerializer,
 )
 from .models import Book
+from users.models import Profile
 
 
 class BookListAPIView(ListAPIView):
@@ -39,5 +41,20 @@ class DetailCreateView(APIView):
             instance = out.save()
             res = DetailSerializer(instance)
             return Response(res.data, status=status.HTTP_200_OK)
+        else:
+            return Response(out.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RecommendCreateView(APIView):
+    serializer_class = RecommendationCreateSerializer
+
+    def post(self, request):
+        out = RecommendationCreateSerializer(data=request.data)
+        if out.is_valid():
+            instance = out.save()
+            owner = Profile.objects.get(user__username=request.user.username)
+            instance.owner = owner
+            instance.save()
+            return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response(out.errors, status=status.HTTP_400_BAD_REQUEST)

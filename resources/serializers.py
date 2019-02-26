@@ -26,16 +26,30 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
+class RecommmendationSerializer(serializers.ModelSerializer):
+    owner = UserSerializer()
+
+    class Meta:
+        model = Recommendation
+        fields = [
+            'owner',
+            'text'
+        ]
+
+
 class DetailSerializer(serializers.ModelSerializer):
     publisher = PublisherSerializer()
     translator = UserSerializer(many=True)
+    recommendations = RecommmendationSerializer(many=True)
 
     class Meta:
         model = Detail
         fields = [
+            'id',
             'publisher',
             'translator',
             'version',
+            'recommendations'
         ]
 
 
@@ -134,3 +148,7 @@ class DetailCreateSerializer(serializers.ModelSerializer):
 class RecommendationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recommendation
+        fields = [
+            'book',
+            'text',
+        ]
