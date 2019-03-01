@@ -131,7 +131,9 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
         form.instance.author = self.request.user
         super().form_valid(form)
         post = self.get_object()
-        self.edit_in_telegram(post.telegram_id, post.content, post.image != '' or post.file != '')
+        self.edit_in_telegram(post.telegram_id,
+                              str(self.request.user) + ': \n' + str(post.content),
+                              post.image != '' or post.file != '')
         return super().form_valid(form)
 
 
