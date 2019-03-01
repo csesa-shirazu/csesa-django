@@ -22,7 +22,7 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('telegramboard-home')  # kwargs={'pk': self.pk})
+        return reverse('telegramboard:telegramboard-home')  # kwargs={'pk': self.pk})
 
 # @receiver(post_save, sender=Post)
 # def today():

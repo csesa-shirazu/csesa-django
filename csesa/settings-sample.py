@@ -48,9 +48,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 TELEGRAM_BOT_TOKEN = ""
 SEND_TO_CHAT_ID = ""
+CHANNEL_USER_NAME = "cse_board"
 PROXY = ""
 
 AUTH_USER_MODEL = 'auth.User'
+LOGIN_REDIRECT_URL = '/board/'
 
 # Application definition
 

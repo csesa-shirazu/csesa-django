@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from .models import Post
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -63,11 +63,15 @@ def send_in_bot(msg, request):
     # print(post.telegram_id)
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(CreateView):
     model = Post
     form_class = UserCreateForm
     template_name = 'telegramboard/post_form.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_staff:
+            raise Http404
+        return super(PostCreateView, self).dispatch(request, *args, **kwargs)
     # fields = ['title', 'content', 'image']
     #
     def form_valid(self, form):
@@ -107,9 +111,14 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'image', 'file']
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_staff:
+            raise Http404
+        return super(PostUpdateView, self).dispatch(request, *args, **kwargs)
 
     def edit_in_telegram(self, tel_id, content, if_file):
         if if_file:
@@ -133,10 +142,15 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return False
 
 
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(UserPassesTestMixin, DeleteView):
     model = Post
 
-    success_url = '/messenger/'
+    success_url = '/board/'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_staff:
+            raise Http404
+        return super(PostDeleteView, self).dispatch(request, *args, **kwargs)
 
     def test_func(self):
         post = self.get_object()
@@ -162,4 +176,4 @@ def ContactView(request):
 class Logout(auth_views.LogoutView):
     def get(self, request, *args, **kwargs):
         super(Logout, self).get(request)
-        return redirect('login')
+        return redirect('telegramboard:login')
