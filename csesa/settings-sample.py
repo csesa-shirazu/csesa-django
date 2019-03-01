@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_rest_passwordreset',
     'corsheaders',
+    'crispy_forms',
 
     'sorl.thumbnail',
     'sorl_thumbnail_serializer',
