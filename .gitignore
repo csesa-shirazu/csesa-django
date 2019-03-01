@@ -1,15 +1,12 @@
 #Some secret data :)
 cse-data
 
-#######Django#######
-#gunicorn
-web.sock
-
 #settings
 settings.py
 
 #server
 nohup.out
+csesa.sock
 
 #media
 media
@@ -124,4 +121,8 @@ venv.bak/
 /site
 
 # mypy
+<<<<<<< HEAD
 .mypy_cache/
+=======
+.mypy_cache/
+>>>>>>> c4509466668506f34e0f2f92ece600c5d52e17f9
