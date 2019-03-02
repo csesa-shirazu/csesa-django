@@ -23,13 +23,6 @@ class Detail(models.Model):
         return self.book.title + " | " + self.version
 
 
-class BookSuggestion(models.Model):
-    user = models.ForeignKey("users.Profile", on_delete=models.CASCADE)
-    recommended = models.TextField()
-    time = models.DateTimeField(auto_now_add=True)
-    encountered = models.BooleanField(default=False)
-
-
 class Recommendation(models.Model):
     owner = models.ForeignKey('users.Profile', related_name='recommendations', on_delete=models.CASCADE, null=True)
     text = models.TextField()
