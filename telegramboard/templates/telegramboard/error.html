@@ -1,8 +1,9 @@
 {% extends "telegramboard/base.html" %}
 {% block content %}
     <div class="content-section">
-        <h2>fill either</h2>
+        <h2 style="direction:rtl">حداقل یکی از فیلد های متن، عکس یا فایل را پر کنید.</h2>
+        <br>
         <!--<p><strong>Phone Number:</strong> 09379852503</p>-->
-        <a class="btn btn-outline-info" href="{% url 'telegramboard:post-create' %}">Go  Back</a>
+        <a class="btn btn-outline-info" href="{% url 'telegramboard:post-create' %}" style="direction:rtl">بازگشت</a>
     </div>
 {% endblock content %}
