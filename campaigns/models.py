@@ -29,6 +29,7 @@ class Campaign(models.Model):
         in a specific term that has a teacher, some graders and
         some students
     """
+    title = models.CharField(max_length=10000, blank=True, null=True)
     course_data = models.ForeignKey(to="csecourses.CSECourseGroupTerm",
                                     on_delete=models.CASCADE,
                                     blank=True,
@@ -58,6 +59,8 @@ class Campaign(models.Model):
     def name(self):
         if self.course_data:
             return str(self.course_data)
+        elif self.title:
+            return self.title
         return ""
 
     def __str__(self):
