@@ -4,12 +4,12 @@
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Delete Post</legend>
-                <h2>Are You Sure To Delete Post '{{ object.title }}' ?</h2>
+                <legend class="border-bottom mb-4">حذف پیام</legend>
+                <h2 style="direction:rtl">آیا مطمئنید میخواهید '{{ object.title }}' را حذف کنید؟ </h2>
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-danger" type="submit">Delete</button>
-                <a class="btn btn-outline-secondary" href="{% url 'telegramboard:post-detail' object.id %}">Cancel</a>
+                <button class="btn btn-outline-danger" type="submit">حذف</button>
+                <a class="btn btn-outline-secondary" href="{% url 'telegramboard:post-detail' object.id %}">بازگشت</a>
 
             </div>
         </form>
