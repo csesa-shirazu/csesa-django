@@ -93,3 +93,10 @@ class CampaignPartyRelation(models.Model):
 
     def __str__(self):
         return str(self.content_object) + " | " + str(self.campaign)
+
+
+
+class CampaignSubscription(models.Model):
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='subscriptions')
+    email = models.EmailField(max_length=255)
+    phone = models.CharField(max_length=255, blank=True, null=True)

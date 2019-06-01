@@ -34,6 +34,7 @@ urlpatterns = [
 
   path('api/v1/user/', include('users.urls', namespace='users')),
   path('api/v1/qualification/', include('qualification.apiv1.urls', namespace='qualification-api-v1')),
+  path('api/v1/campaigns/', include('campaigns.apiv1.urls', namespace='campaigns-api-v1')),
   path('api/v1/resources/', include('resources.urls', namespace='resources-api')),
 
 

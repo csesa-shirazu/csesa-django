@@ -196,12 +196,12 @@ class GraderyRequestAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        status = self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response({"result": "success"}, status=status, headers=headers)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     status = self.perform_create(serializer)
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response({"result": "success"}, status=status, headers=headers)
 
     def perform_create(self, serializer):
         profile = self.request.user.profile.first()

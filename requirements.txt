@@ -8,7 +8,9 @@ chardet==3.0.4
 decorator==4.3.2
 Django==2.0.9
 django-cors-headers==2.4.0
+django-crispy-forms==1.7.2
 django-enumfields==0.10.1
+django-filter==2.1.0
 django-rest-framework==0.1.0
 django-rest-passwordreset==0.9.5
 djangorestframework==3.8.2
@@ -36,6 +38,7 @@ requests==2.20.1
 six==1.11.0
 sorl-thumbnail==12.5.0
 sorl-thumbnail-serializer-field==0.2.1
+telepot==12.7
 traitlets==4.3.2
 typed-ast==1.1.0
 urllib3==1.23
