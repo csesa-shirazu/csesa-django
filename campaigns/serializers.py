@@ -46,7 +46,10 @@ class CampaignAsCourseSimpleSerializer(EnumSupportSerializerMixin, ModelSerializ
         return obj.name
 
     def get_group(self, obj: Campaign):
-        return obj.course_data.course_group.group
+        if obj.course_data:
+            return obj.course_data.course_group.group
+        else:
+            return None
 
     def get_multi_group(self, obj: Campaign):
         return CSECourseGroup.objects.filter(
