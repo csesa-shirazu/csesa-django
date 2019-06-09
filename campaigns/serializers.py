@@ -25,7 +25,7 @@ class CampaignAsCourseSerializer(EnumSupportSerializerMixin, ModelSerializer):
         ]
 
     def get_title(self, obj: Campaign):
-        return obj.course_data.course_group.course.title
+        return obj.name
 
 
 class CampaignAsCourseSimpleSerializer(EnumSupportSerializerMixin, ModelSerializer):
