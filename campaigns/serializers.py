@@ -52,9 +52,12 @@ class CampaignAsCourseSimpleSerializer(EnumSupportSerializerMixin, ModelSerializ
             return None
 
     def get_multi_group(self, obj: Campaign):
-        return CSECourseGroup.objects.filter(
-            course=obj.course_data.course_group.course
-        ).count() > 1
+        if obj.course_data:
+            return CSECourseGroup.objects.filter(
+                course=obj.course_data.course_group.course
+            ).count() > 1
+        else:
+            return None
 
 
 class GraderRelationSerializer(EnumSupportSerializerMixin, ModelSerializer):
