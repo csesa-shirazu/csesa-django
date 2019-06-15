@@ -6,6 +6,7 @@ from django.views import View
 
 from campaigns.models import Campaign, CampaignPartyRelation, CampaignPartyRelationType
 from campaigns.serializers import CampaignAsCourseSerializer
+from csecourses.models import CSETerm
 from qualification.models import QualificationForm, Qualification, QA
 from qualification.serializers import QualificationFormSerializer
 from users.models import Profile
@@ -23,7 +24,8 @@ class qualification_view(View):
                     cprelations__in=CampaignPartyRelation.objects.filter(
                         object_id=the_profile.id,
                         type=CampaignPartyRelationType.STUDENT
-                    )
+                    ),
+                    course_data__term=CSETerm.objects.last()
                 ),
                 many=True
             ).data,
