@@ -52,7 +52,8 @@ class Campaign(models.Model):
             Profile.objects.filter(campaign_relations__in=CampaignPartyRelation.objects.filter(
                 campaign=self,
                 content_type=ContentType.objects.get(model='profile'),
-                type=CampaignPartyRelationType.GRADER
+                type=CampaignPartyRelationType.GRADER,
+                status=CampaignPartyRelationStatus.APPROVED
             ).all()).order_by('-id'), many=True).data
 
     @property
