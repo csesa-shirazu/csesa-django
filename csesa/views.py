@@ -49,7 +49,7 @@ def graders_view(request):
                             campaign=the_campaign,
                             content_type=ContentType.objects.get_for_model(the_grader),
                             object_id=the_grader.id,
-                            type=CampaignPartyRelationType.GRADER
+                            type=CampaignPartyRelationType.GRADER,
                     ).exists():
                         context['message'] = 'گریدر از قبل وارد شده'
                     else:
@@ -57,7 +57,8 @@ def graders_view(request):
                             campaign=the_campaign,
                             content_type=ContentType.objects.get_for_model(the_grader),
                             object_id=the_grader.id,
-                            type=CampaignPartyRelationType.GRADER
+                            type=CampaignPartyRelationType.GRADER,
+                            status=CampaignPartyRelationStatus.APPROVED
                         )
                         context['message'] = 'با موفقیت ثبت شد'
 

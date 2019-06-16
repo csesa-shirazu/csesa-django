@@ -67,7 +67,8 @@ class GraderRelationSerializer(EnumSupportSerializerMixin, ModelSerializer):
         model = CampaignPartyRelation
         fields = [
             'campaign',
-            'content_object'
+            'content_object',
+            'status'
         ]
 
 class CampaignGraderyRequestSerializer(EnumSupportSerializerMixin, ModelSerializer):
