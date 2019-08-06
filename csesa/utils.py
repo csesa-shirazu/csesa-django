@@ -167,7 +167,7 @@ def read_course_students(file_name):
                  term=CSETerm.objects.last()
              )
          except:
-             the_course_group_term = CSECourseGroup.objects.create(
+             the_course_group_term = CSECourseGroupTerm.objects.create(
                  course_group=the_course_group,
                  term=CSETerm.objects.last()
              )
