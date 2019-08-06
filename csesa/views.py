@@ -45,13 +45,20 @@ def graders_view(request):
                 except Campaign.DoesNotExist:
                     context['message'] = 'درس وارد شده نامعتبر است'
                 else:
-                    if CampaignPartyRelation.objects.filter(
+                    grader_qs = CampaignPartyRelation.objects.filter(
                             campaign=the_campaign,
                             content_type=ContentType.objects.get_for_model(the_grader),
                             object_id=the_grader.id,
                             type=CampaignPartyRelationType.GRADER,
-                    ).exists():
-                        context['message'] = 'گریدر از قبل وارد شده'
+                    )
+                    if grader_qs.exists():
+                        grader_relation = grader_qs.first()
+                        if grader_relation.status != CampaignPartyRelationStatus.APPROVED:
+                            grader_relation.status = CampaignPartyRelationStatus.APPROVED
+                            grader_relation.save()
+                            context['message'] = 'گریدر از قبل وارد شده'
+                        else:
+                            context['message'] = 'گریدر از قبل وارد شده'
                     else:
                         CampaignPartyRelation.objects.create(
                             campaign=the_campaign,
@@ -65,11 +72,15 @@ def graders_view(request):
         context.update({
             'gcrs': GraderRelationSerializer(
                 CampaignPartyRelation.objects.filter(
-                    type=CampaignPartyRelationType.GRADER
+                    type=CampaignPartyRelationType.GRADER,
+                    campaign__course_data__term = CSETerm.objects.last(),
+                    status=CampaignPartyRelationStatus.APPROVED
                 ), many=True
             ).data,
             'courses': CampaignAsCourseSimpleSerializer(
-                Campaign.objects.all(),
+                Campaign.objects.filter(
+                    course_data__term = CSETerm.objects.last()
+                ),
                 many=True
             ).data
         })
