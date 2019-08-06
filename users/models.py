@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 # from campaigns.models import CampaignPartyRelation
 from django.db.models.signals import post_save
 
-from csesa.utils import arabic_chars_to_persian
 
 
 def profile_image_upload_location(instance, filename):
@@ -37,6 +36,8 @@ class Profile(models.Model):
         return str(self.user) + ' | ' + str(self.first_name) + ' ' + str(self.last_name)
     # No other data for now
 
+def arabic_chars_to_persian(ar_str):
+    return ar_str.replace('ك', 'ک').replace('ي', 'ی')
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created and not Profile.objects.filter(user=instance).exists():
