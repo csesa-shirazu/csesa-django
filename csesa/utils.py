@@ -2,7 +2,8 @@ import json, random, string
 
 from django.contrib.contenttypes.models import ContentType
 
-from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign, CampaignPartyRelationStatus
+from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign, CampaignPartyRelationStatus, \
+    CampaignType
 from csecourses.models import CSECourse, CSECourseGroup, CSECourseGroupTerm, CSETerm
 from users.models import Profile, User
 
@@ -177,7 +178,8 @@ def read_course_students(file_name):
              )
          except:
              the_campaign = Campaign.objects.create(
-                 course_data=the_course_group_term
+                 course_data=the_course_group_term,
+                 type=CampaignType.COURSE
              )
          for s in f[x]['students']:
              p = None
