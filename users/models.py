@@ -40,7 +40,7 @@ class Profile(models.Model):
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created and not Profile.objects.filter(user=instance).exists():
-        Profile.objects.create(user=instance, first_name=arabic_chars_to_persian(instance.first_name), last_name=arabic_chars_to_persian(instance.last_name)
+        Profile.objects.create(user=instance, first_name=arabic_chars_to_persian(instance.first_name), last_name=arabic_chars_to_persian(instance.last_name))
 
 
 post_save.connect(create_user_profile, sender=User, dispatch_uid="create_user_profile")
