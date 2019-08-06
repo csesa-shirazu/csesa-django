@@ -190,7 +190,7 @@ def read_course_students(file_name):
                  while User.objects.filter(username=username).exists():
                      username = rand_string()
                  u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
-                 p = Profile.objects.create(user=u, first_name=arabic_chars_to_persian(s['first_name']), last_name=arabic_chars_to_persian(s['family_name']))
+                 p = u.profile.first()
              if(not CampaignPartyRelation.objects.filter(
                  campaign=the_campaign,
                  object_id=p.id,

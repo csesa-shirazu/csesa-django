@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 # from campaigns.models import CampaignPartyRelation
 from django.db.models.signals import post_save
 
+from csesa.utils import arabic_chars_to_persian
+
 
 def profile_image_upload_location(instance, filename):
     return "user/%s/profile/%s" % (instance.user.id, filename)
@@ -38,7 +40,7 @@ class Profile(models.Model):
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created and not Profile.objects.filter(user=instance).exists():
-        Profile.objects.create(user=instance)
+        Profile.objects.create(user=instance, first_name=arabic_chars_to_persian(instance.first_name), last_name=arabic_chars_to_persian(instance.last_name)
 
 
 post_save.connect(create_user_profile, sender=User, dispatch_uid="create_user_profile")
