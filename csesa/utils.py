@@ -2,7 +2,7 @@ import json, random, string
 
 from django.contrib.contenttypes.models import ContentType
 
-from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign
+from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign, CampaignPartyRelationStatus
 from csecourses.models import CSECourse, CSECourseGroup, CSECourseGroupTerm, CSETerm
 from users.models import Profile, User
 
@@ -135,3 +135,69 @@ def get_prev_term():
 
 def get_cur_term():
     return CSETerm.objects.last()  # TODO: correct logic
+
+def read_course_students(file_name):
+    file = open(file_name, 'r')
+    f = json.loads(file.read())
+    file.close()
+    for x in f.keys():
+         try:
+             the_course = CSECourse.objects.get(cse_id=x.split('^')[0])
+         except:
+             the_course = CSECourse.objects.create(
+                 cse_id=x.split('^')[0],
+                 title=f[x]['course_name'],
+             )
+         else:
+             the_course.title = f[x]['course_name']
+             the_course.save()
+         try:
+             the_course_group = CSECourseGroup.objects.get(
+                 course=the_course,
+                 group=int(x.split('^')[1])
+             )
+         except:
+             the_course_group = CSECourseGroup.objects.create(
+                 course=the_course,
+                 group=int(x.split('^')[1])
+             )
+         try:
+             the_course_group_term = CSECourseGroupTerm.objects.get(
+                 course_group=the_course_group,
+                 term=CSETerm.objects.last()
+             )
+         except:
+             the_course_group_term = CSECourseGroup.objects.create(
+                 course_group=the_course_group,
+                 term=CSETerm.objects.last()
+             )
+         try:
+             the_campaign = Campaign.objects.get(
+                 course_data=the_course_group_term
+             )
+         except:
+             the_campaign = Campaign.objects.create(
+                 course_data=the_course_group_term
+             )
+         for s in f[x]['students']:
+             p = None
+             try:
+                 p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
+             except:
+                 username = rand_string()
+                 while User.objects.filter(username=username).exists()
+                     username = rand_string()
+                 u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['last_name']
+                 p = Profile.objects.create(user=uQ, first_name=arabic_chars_to_persian(s['first_name']), last_name=arabic_chars_to_persian(s['last_name'])
+             if(not CampaignPartyRelation.objects.filter(
+                 campaign=the_campaign,
+                 object_id=p.id,
+                 content_type=ContentType.objects.get_for_model(Profile),
+                 type=CampaignPartyRelationType.STUDENT
+             ).exists()):
+                 CampaignPartyRelation.objects.create(
+                     campaign=the_campaign,
+                     content_object=p,
+                     type=CampaignPartyRelationType.STUDENT,
+                     status=CampaignPartyRelationStatus.APPROVED
+                 )
