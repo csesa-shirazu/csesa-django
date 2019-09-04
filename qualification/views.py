@@ -11,6 +11,7 @@ from qualification.models import QualificationForm, Qualification, QA
 from qualification.serializers import QualificationFormSerializer
 from users.models import Profile
 
+from django.contrib.auth.models import User
 
 class qualification_view(View):
     template_name = 'grader-qualification.html'
@@ -142,7 +143,6 @@ class qualification_view(View):
         else:
             return redirect(reverse('users:login') + "?next=" + request.path_info)
 
-# Create your views here.
 class result_view(View):
     template_name = 'grader-qualification-result.html'
 
@@ -151,3 +151,60 @@ class result_view(View):
             'slug': slug
         }
         return render(request, self.template_name, context)
+
+class gradery_no_vote(View):
+    template_name = 'grader-qualification-no-vote.html'
+
+    def get(self, request, slug=None, *args, **kwargs):
+        students = []
+
+        # current term
+        term = CSETerm.objects.last()
+
+
+        # this term qualifications
+        qualification_qs = Qualification.objects.filter(
+            dst__campaign__course_data__term = term
+        ).all()
+
+        # students with at least one course this term
+        voted_profile_ids = set()
+        for obj in CampaignPartyRelation.objects.filter(
+            content_type=ContentType.objects.get_for_model(Profile),
+            type=CampaignPartyRelationType.STUDENT,
+            campaign__course_data__term = term,
+            src_qualifications__isnull=False
+        ).values('object_id'):
+            voted_profile_ids.add(obj['object_id'])
+
+        not_voted_profile_ids = set()
+        for obj in CampaignPartyRelation.objects.filter(
+            content_type=ContentType.objects.get_for_model(Profile),
+            type=CampaignPartyRelationType.STUDENT,
+            campaign__course_data__term = term,
+        ).values('object_id'):
+            if obj['object_id'] not in voted_profile_ids:
+                not_voted_profile_ids.add(obj['object_id'])
+
+
+        # for i in cpr_profile_ids:
+        #     qqs = Qualification.objects.filter(
+        #         src__object_id=i['object_id'],
+        #         dst__campaign__course_data__term=term
+        #     )
+        #     if qqs.exists():
+        #         print(CampaignPartyRelation.objects.filter(
+        #             content_type=ContentType.objects.get_for_model(Profile),
+        #             type=CampaignPartyRelationType.STUDENT,
+        #             object_id=i['object_id'],
+        #             campaign__course_data__term=term,
+        #             src_qualifications__isnull=True
+        #         ))
+        #         print(qqs[0].src)
+
+        # print(Profile.objects.get(id=cpr_profile_ids[0]['object_id']))
+        students = Profile.objects.filter(
+            id__in = not_voted_profile_ids,
+            user__username__contains = "9"
+        ).order_by('user__username').values('id', 'user__username', 'first_name', 'last_name')
+        return render(request, self.template_name, {'students': students})
