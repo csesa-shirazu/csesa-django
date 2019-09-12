@@ -27,7 +27,7 @@ class GraderQualifiactionPublicResult(ModelSerializer):
             course=obj.campaign.course_data.course_group.course
         ).count() > 1:
             return obj.campaign.course_data.course_group.course.title + ' گروه ' + str(obj.campaign.course_data.course_group.group)
-        return obj.campaign.course_data.course_group.course.title
+        return obj.campaign.course_data.course_group.course.title + ' ' + obj.campaign.course_data.term.title
 
     def get_scores(self, obj):
         scores = []
