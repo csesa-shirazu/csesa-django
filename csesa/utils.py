@@ -129,7 +129,6 @@ def set_teacher_campaign_relations():
                 cpr.type = CampaignPartyRelationType.TEACHER
                 cpr.save()
 
-
 def get_prev_term():
     return CSETerm.objects.get(pk = 2)  # TODO: correct logic
 
@@ -147,10 +146,10 @@ def read_course_students(file_name):
          except:
              the_course = CSECourse.objects.create(
                  cse_id=x.split('^')[0],
-                 title=f[x]['course_name'],
+                 title=f[x]['title'],
              )
          else:
-             the_course.title = f[x]['course_name']
+             the_course.title = f[x]['title']
              the_course.save()
          try:
              the_course_group = CSECourseGroup.objects.get(
@@ -181,25 +180,25 @@ def read_course_students(file_name):
                  course_data=the_course_group_term,
                  type=CampaignType.COURSE
              )
-         for s in f[x]['students']:
-             p = None
-             try:
-                 p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
-             except:
-                 username = rand_string()
-                 while User.objects.filter(username=username).exists():
-                     username = rand_string()
-                 u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
-                 p = u.profile.first()
-             if(not CampaignPartyRelation.objects.filter(
-                 campaign=the_campaign,
-                 object_id=p.id,
-                 content_type=ContentType.objects.get_for_model(Profile),
-                 type=CampaignPartyRelationType.STUDENT
-             ).exists()):
-                 CampaignPartyRelation.objects.create(
-                     campaign=the_campaign,
-                     content_object=p,
-                     type=CampaignPartyRelationType.STUDENT,
-                     status=CampaignPartyRelationStatus.APPROVED
-                 )
+        #  for s in f[x]['students']:
+        #      p = None
+        #      try:
+        #          p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
+        #      except:
+        #          username = rand_string()
+        #          while User.objects.filter(username=username).exists():
+        #              username = rand_string()
+        #          u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
+        #          p = u.profile.first()
+        #      if(not CampaignPartyRelation.objects.filter(
+        #          campaign=the_campaign,
+        #          object_id=p.id,
+        #          content_type=ContentType.objects.get_for_model(Profile),
+        #          type=CampaignPartyRelationType.STUDENT
+        #      ).exists()):
+        #          CampaignPartyRelation.objects.create(
+        #              campaign=the_campaign,
+        #              content_object=p,
+        #              type=CampaignPartyRelationType.STUDENT,
+        #              status=CampaignPartyRelationStatus.APPROVED
+        #          )

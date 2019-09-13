@@ -154,7 +154,8 @@ class CourseGroupTAsAPIView(APIView):
                 CampaignPartyRelation.objects.filter(
                     campaign=prev_campaign,
                     content_type=ContentType.objects.get(model='profile'),
-                    type=CampaignPartyRelationType.GRADER
+                    type=CampaignPartyRelationType.GRADER,
+                    status=CampaignPartyRelationStatus.APPROVED,
                 ).all(), context={
                     'request': request,
                     'is_teacher': prev_is_teacher
