@@ -141,45 +141,79 @@ def read_course_students(file_name):
     f = json.loads(file.read())
     file.close()
     for x in f.keys():
-         try:
-             the_course = CSECourse.objects.get(cse_id=x.split('^')[0])
-         except:
-             the_course = CSECourse.objects.create(
-                 cse_id=x.split('^')[0],
-                 title=f[x]['title'],
-             )
-         else:
-             the_course.title = f[x]['title']
-             the_course.save()
-         try:
-             the_course_group = CSECourseGroup.objects.get(
-                 course=the_course,
-                 group=int(x.split('^')[1])
-             )
-         except:
-             the_course_group = CSECourseGroup.objects.create(
-                 course=the_course,
-                 group=int(x.split('^')[1])
-             )
-         try:
-             the_course_group_term = CSECourseGroupTerm.objects.get(
-                 course_group=the_course_group,
-                 term=CSETerm.objects.last()
-             )
-         except:
-             the_course_group_term = CSECourseGroupTerm.objects.create(
-                 course_group=the_course_group,
-                 term=CSETerm.objects.last()
-             )
-         try:
-             the_campaign = Campaign.objects.get(
-                 course_data=the_course_group_term
-             )
-         except:
-             the_campaign = Campaign.objects.create(
-                 course_data=the_course_group_term,
-                 type=CampaignType.COURSE
-             )
+        try:
+            the_course = CSECourse.objects.get(cse_id=x.split('^')[0])
+        except:
+            the_course = CSECourse.objects.create(
+                cse_id=x.split('^')[0],
+                title=f[x]['title'],
+            )
+        else:
+            the_course.title = f[x]['title']
+            the_course.save()
+        try:
+            the_course_group = CSECourseGroup.objects.get(
+                course=the_course,
+                group=int(x.split('^')[1])
+            )
+        except:
+            the_course_group = CSECourseGroup.objects.create(
+                course=the_course,
+                group=int(x.split('^')[1])
+            )
+        try:
+            the_course_group_term = CSECourseGroupTerm.objects.get(
+                course_group=the_course_group,
+                term=CSETerm.objects.last()
+            )
+        except:
+            the_course_group_term = CSECourseGroupTerm.objects.create(
+                course_group=the_course_group,
+                term=CSETerm.objects.last()
+            )
+        try:
+            the_campaign = Campaign.objects.get(
+                course_data=the_course_group_term
+            )
+        except:
+            the_campaign = Campaign.objects.create(
+                course_data=the_course_group_term,
+                type=CampaignType.COURSE
+            )
+
+        teachers_string_arr = f[x]['teacher'].split('*')
+        
+        for i in range(0,len(teachers_string_arr), 3):
+
+            if(i + 1 >= len(teachers_string_arr)):
+                break
+
+            teachers_qs = User.objects.filter(
+                first_name = teachers_string_arr[i + 1],
+                last_name = teachers_string_arr[i],
+            )
+            if teachers_qs.exists():
+                teacher = teachers_qs.first()
+            else:
+                teacher = User.objects.create(
+                    username=rand_string(),
+                    first_name = teachers_string_arr[i + 1],
+                    last_name = teachers_string_arr[i]
+                )
+            teacher_profile = teacher.profile.first()
+            if not CampaignPartyRelation.objects.filter(
+                campaign=the_campaign,
+                content_type=ContentType.objects.get_for_model(teacher_profile),
+                object_id=teacher_profile.id,
+                type=CampaignPartyRelationType.TEACHER,
+                status=CampaignPartyRelationStatus.APPROVED
+            ).exists():
+                CampaignPartyRelation.objects.create(
+                    campaign=the_campaign,
+                    content_object=teacher.profile.first(),
+                    type=CampaignPartyRelationType.TEACHER,
+                    status=CampaignPartyRelationStatus.APPROVED
+                )
         #  for s in f[x]['students']:
         #      p = None
         #      try:
