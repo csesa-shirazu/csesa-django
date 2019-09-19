@@ -26,7 +26,7 @@ class GraderQualifiactionPublicResult(ModelSerializer):
         if CSECourseGroup.objects.filter(
             course=obj.campaign.course_data.course_group.course
         ).count() > 1:
-            return obj.campaign.course_data.course_group.course.title + ' گروه ' + str(obj.campaign.course_data.course_group.group)
+            return obj.campaign.course_data.course_group.course.title + ' گروه ' + str(obj.campaign.course_data.course_group.group) + ' ' + obj.campaign.course_data.term.title
         return obj.campaign.course_data.course_group.course.title + ' ' + obj.campaign.course_data.term.title
 
     def get_scores(self, obj):
