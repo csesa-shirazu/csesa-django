@@ -214,25 +214,26 @@ def read_course_students(file_name):
                     type=CampaignPartyRelationType.TEACHER,
                     status=CampaignPartyRelationStatus.APPROVED
                 )
-        #  for s in f[x]['students']:
-        #      p = None
-        #      try:
-        #          p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
-        #      except:
-        #          username = rand_string()
-        #          while User.objects.filter(username=username).exists():
-        #              username = rand_string()
-        #          u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
-        #          p = u.profile.first()
-        #      if(not CampaignPartyRelation.objects.filter(
-        #          campaign=the_campaign,
-        #          object_id=p.id,
-        #          content_type=ContentType.objects.get_for_model(Profile),
-        #          type=CampaignPartyRelationType.STUDENT
-        #      ).exists()):
-        #          CampaignPartyRelation.objects.create(
-        #              campaign=the_campaign,
-        #              content_object=p,
-        #              type=CampaignPartyRelationType.STUDENT,
-        #              status=CampaignPartyRelationStatus.APPROVED
-        #          )
+
+        for s in f[x]['students']:
+            p = None
+            try:
+                p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
+            except:
+                username = rand_string()
+                while User.objects.filter(username=username).exists():
+                    username = rand_string()
+                u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
+                p = u.profile.first()
+            if(not CampaignPartyRelation.objects.filter(
+                campaign=the_campaign,
+                object_id=p.id,
+                content_type=ContentType.objects.get_for_model(Profile),
+                type=CampaignPartyRelationType.STUDENT
+            ).exists()):
+                CampaignPartyRelation.objects.create(
+                    campaign=the_campaign,
+                    content_object=p,
+                    type=CampaignPartyRelationType.STUDENT,
+                    status=CampaignPartyRelationStatus.APPROVED
+                )
