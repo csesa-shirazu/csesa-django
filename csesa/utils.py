@@ -1,6 +1,7 @@
 import json, random, string
 
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Model
 
 from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, Campaign, CampaignPartyRelationStatus, \
     CampaignType
@@ -129,12 +130,14 @@ def set_teacher_campaign_relations():
                 cpr.type = CampaignPartyRelationType.TEACHER
                 cpr.save()
 
+
 def get_prev_term():
-    return CSETerm.objects.get(pk = 2)  # TODO: correct logic
+    return CSETerm.objects.get(pk=2)  # TODO: correct logic
 
 
 def get_cur_term():
     return CSETerm.objects.last()  # TODO: correct logic
+
 
 def read_course_students(file_name):
     file = open(file_name, 'r')
@@ -143,11 +146,13 @@ def read_course_students(file_name):
     for x in f.keys():
         try:
             the_course = CSECourse.objects.get(cse_id=x.split('^')[0])
-        except:
+        except CSECourse.DoesNotExist:
             the_course = CSECourse.objects.create(
                 cse_id=x.split('^')[0],
                 title=f[x]['title'],
             )
+        except:
+            print(f[x]['title'])
         else:
             the_course.title = f[x]['title']
             the_course.save()
@@ -182,31 +187,31 @@ def read_course_students(file_name):
             )
 
         teachers_string_arr = f[x]['teacher'].split('*')
-        
-        for i in range(0,len(teachers_string_arr), 3):
 
-            if(i + 1 >= len(teachers_string_arr)):
+        for i in range(0, len(teachers_string_arr), 3):
+
+            if (i + 1 >= len(teachers_string_arr)):
                 break
 
             teachers_qs = User.objects.filter(
-                first_name = teachers_string_arr[i + 1],
-                last_name = teachers_string_arr[i],
+                first_name=teachers_string_arr[i + 1],
+                last_name=teachers_string_arr[i],
             )
             if teachers_qs.exists():
                 teacher = teachers_qs.first()
             else:
                 teacher = User.objects.create(
                     username=rand_string(),
-                    first_name = teachers_string_arr[i + 1],
-                    last_name = teachers_string_arr[i]
+                    first_name=teachers_string_arr[i + 1],
+                    last_name=teachers_string_arr[i]
                 )
             teacher_profile = teacher.profile.first()
             if not CampaignPartyRelation.objects.filter(
-                campaign=the_campaign,
-                content_type=ContentType.objects.get_for_model(teacher_profile),
-                object_id=teacher_profile.id,
-                type=CampaignPartyRelationType.TEACHER,
-                status=CampaignPartyRelationStatus.APPROVED
+                    campaign=the_campaign,
+                    content_type=ContentType.objects.get_for_model(teacher_profile),
+                    object_id=teacher_profile.id,
+                    type=CampaignPartyRelationType.TEACHER,
+                    status=CampaignPartyRelationStatus.APPROVED
             ).exists():
                 CampaignPartyRelation.objects.create(
                     campaign=the_campaign,
@@ -219,17 +224,19 @@ def read_course_students(file_name):
             p = None
             try:
                 p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
-            except:
-                username = rand_string()
+            except Profile.DoesNotExist:
+                username = rand_s6tring()
                 while User.objects.filter(username=username).exists():
                     username = rand_string()
                 u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
                 p = u.profile.first()
-            if(not CampaignPartyRelation.objects.filter(
-                campaign=the_campaign,
-                object_id=p.id,
-                content_type=ContentType.objects.get_for_model(Profile),
-                type=CampaignPartyRelationType.STUDENT
+            except:
+                print(s['first_name'] + ' ' + s['family_name'])
+            if (not CampaignPartyRelation.objects.filter(
+                    campaign=the_campaign,
+                    object_id=p.id,
+                    content_type=ContentType.objects.get_for_model(Profile),
+                    type=CampaignPartyRelationType.STUDENT
             ).exists()):
                 CampaignPartyRelation.objects.create(
                     campaign=the_campaign,
