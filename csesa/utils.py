@@ -153,6 +153,7 @@ def read_course_students(file_name):
             )
         except:
             print(f[x]['title'])
+            continue
         else:
             the_course.title = f[x]['title']
             the_course.save()
@@ -232,6 +233,7 @@ def read_course_students(file_name):
                 p = u.profile.first()
             except:
                 print(s['first_name'] + ' ' + s['family_name'])
+                continue
             if (not CampaignPartyRelation.objects.filter(
                     campaign=the_campaign,
                     object_id=p.id,
