@@ -225,7 +225,7 @@ def read_course_students(file_name):
             try:
                 p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
             except Profile.DoesNotExist:
-                username = rand_s6tring()
+                username = rand_string()
                 while User.objects.filter(username=username).exists():
                     username = rand_string()
                 u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
