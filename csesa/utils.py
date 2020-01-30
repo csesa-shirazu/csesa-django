@@ -224,12 +224,12 @@ def read_course_students(file_name):
         for s in f[x]['students']:
             p = None
             try:
-                p = Profile.objects.get(user__first_name=s['first_name'], user__last_name=s['family_name'])
+                p = Profile.objects.get(user__first_name=s['first_name'].strip(), user__last_name=s['family_name'].strip())
             except Profile.DoesNotExist:
                 username = rand_string()
                 while User.objects.filter(username=username).exists():
                     username = rand_string()
-                u = User.objects.create(username=username, first_name=s['first_name'], last_name=s['family_name'])
+                u = User.objects.create(username=username, first_name=s['first_name'].strip(), last_name=s['family_name'].strip())
                 p = u.profile.first()
             except:
                 print(s['first_name'] + ' ' + s['family_name'])
