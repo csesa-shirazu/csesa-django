@@ -131,12 +131,12 @@ def set_teacher_campaign_relations():
                 cpr.save()
 
 
-def get_prev_term():
-    return CSETerm.objects.get(pk=2)  # TODO: correct logic
-
-
 def get_cur_term():
     return CSETerm.objects.last()  # TODO: correct logic
+
+def get_prev_term():
+    return CSETerm.objects.get(pk=get_cur_term().pk - 1)  # TODO: correct logic
+
 
 
 def read_course_students(file_name):
