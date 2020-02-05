@@ -173,12 +173,12 @@ def read_course_data(file_name, cse_term, read_students):
         try:
             the_course_group_term = CSECourseGroupTerm.objects.get(
                 course_group=the_course_group,
-                term=CSETerm.objects.last()
+                term=cse_term
             )
         except:
             the_course_group_term = CSECourseGroupTerm.objects.create(
                 course_group=the_course_group,
-                term=CSETerm.objects.last()
+                term=cse_term
             )
         try:
             the_campaign = Campaign.objects.get(
