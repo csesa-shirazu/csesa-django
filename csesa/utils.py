@@ -108,6 +108,9 @@ def read_courses(stdno):
 def arabic_chars_to_persian(ar_str):
     return ar_str.replace('ك', 'ک').replace('ي', 'ی')
 
+def presian_chars_to_arabic(fa_str):
+    return fa_str.replace('ک', 'ك').replace('ی', 'ي')
+
 
 def get_user_profile_names():
     for user in User.objects.all():
@@ -222,9 +225,11 @@ def read_course_students(file_name):
                 )
 
         for s in f[x]['students']:
+            first_name = s['first_name'].strip()
+            last_name =  s['family_name'].strip()
             p = None
             try:
-                p = Profile.objects.get(user__first_name=s['first_name'].strip(), user__last_name=s['family_name'].strip())
+                p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name), first_name], user__last_name__in=[presian_chars_to_arabic(last_name), last_name])
             except Profile.DoesNotExist:
                 username = rand_string()
                 while User.objects.filter(username=username).exists():
