@@ -196,18 +196,19 @@ def read_course_data(file_name, cse_term, read_students):
 
             if (i + 1 >= len(teachers_string_arr)):
                 break
-
+            teacher_first_name = teachers_string_arr[i + 1]
+            teacher_last_name = teachers_string_arr[i]
             teachers_qs = User.objects.filter(
-                first_name=teachers_string_arr[i + 1],
-                last_name=teachers_string_arr[i],
+                first_name__in = [teacher_first_name, presian_chars_to_arabic(teacher_first_name)],
+                last_name__in = [teacher_last_name, presian_chars_to_arabic(teacher_last_name)],
             )
             if teachers_qs.exists():
                 teacher = teachers_qs.first()
             else:
                 teacher = User.objects.create(
                     username=rand_string(),
-                    first_name=teachers_string_arr[i + 1],
-                    last_name=teachers_string_arr[i]
+                    first_name=teacher_first_name,
+                    last_name=teacher_last_name
                 )
             teacher_profile = teacher.profile.first()
             if not CampaignPartyRelation.objects.filter(
