@@ -142,7 +142,7 @@ def get_prev_term():
 
 
 
-def read_course_students(file_name):
+def read_course_data(file_name, cse_term, read_students):
     file = open(file_name, 'r')
     f = json.loads(file.read())
     file.close()
@@ -224,30 +224,31 @@ def read_course_students(file_name):
                     status=CampaignPartyRelationStatus.APPROVED
                 )
 
-        for s in f[x]['students']:
-            first_name = s['first_name'].strip()
-            last_name =  s['family_name'].strip()
-            p = None
-            try:
-                p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name), first_name], user__last_name__in=[presian_chars_to_arabic(last_name), last_name])
-            except Profile.DoesNotExist:
-                username = rand_string()
-                while User.objects.filter(username=username).exists():
+        if read_students:
+            for s in f[x]['students']:
+                first_name = s['first_name'].strip()
+                last_name =  s['family_name'].strip()
+                p = None
+                try:
+                    p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name), first_name], user__last_name__in=[presian_chars_to_arabic(last_name), last_name])
+                except Profile.DoesNotExist:
                     username = rand_string()
-                u = User.objects.create(username=username, first_name=s['first_name'].strip(), last_name=s['family_name'].strip())
-                p = u.profile.first()
-            except:
-                print(s['first_name'] + ' ' + s['family_name'])
-                continue
-            if (not CampaignPartyRelation.objects.filter(
-                    campaign=the_campaign,
-                    object_id=p.id,
-                    content_type=ContentType.objects.get_for_model(Profile),
-                    type=CampaignPartyRelationType.STUDENT
-            ).exists()):
-                CampaignPartyRelation.objects.create(
-                    campaign=the_campaign,
-                    content_object=p,
-                    type=CampaignPartyRelationType.STUDENT,
-                    status=CampaignPartyRelationStatus.APPROVED
-                )
+                    while User.objects.filter(username=username).exists():
+                        username = rand_string()
+                    u = User.objects.create(username=username, first_name=s['first_name'].strip(), last_name=s['family_name'].strip())
+                    p = u.profile.first()
+                except:
+                    print(s['first_name'] + ' ' + s['family_name'])
+                    continue
+                if (not CampaignPartyRelation.objects.filter(
+                        campaign=the_campaign,
+                        object_id=p.id,
+                        content_type=ContentType.objects.get_for_model(Profile),
+                        type=CampaignPartyRelationType.STUDENT
+                ).exists()):
+                    CampaignPartyRelation.objects.create(
+                        campaign=the_campaign,
+                        content_object=p,
+                        type=CampaignPartyRelationType.STUDENT,
+                        status=CampaignPartyRelationStatus.APPROVED
+                    )
