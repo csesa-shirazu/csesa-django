@@ -31,8 +31,14 @@ def index_view(request):
     #         reverse('users:login') + "?next=" + reverse('qualification:form', kwargs={'slug': 'cse-gradery'}))
 
 
-def graders_view(request):
+def graders_view(request, term_title):
     if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+
+        try:
+            the_term = CSETerm.objects.get(title=term_title)
+        except CSETerm.DoesNotExist:
+            raise Http404
+
         context = {}
         if 'gid' in request.POST:
             try:
@@ -73,13 +79,13 @@ def graders_view(request):
             'gcrs': GraderRelationSerializer(
                 CampaignPartyRelation.objects.filter(
                     type=CampaignPartyRelationType.GRADER,
-                    campaign__course_data__term = CSETerm.objects.last(),
+                    campaign__course_data__term = the_term,
                     status=CampaignPartyRelationStatus.APPROVED
                 ), many=True
             ).data,
             'courses': CampaignAsCourseSimpleSerializer(
                 Campaign.objects.filter(
-                    course_data__term = CSETerm.objects.last()
+                    course_data__term = the_term
                 ),
                 many=True
             ).data
