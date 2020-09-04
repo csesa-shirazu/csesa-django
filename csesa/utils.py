@@ -135,10 +135,10 @@ def set_teacher_campaign_relations():
 
 
 def get_cur_term():
-    return CSETerm.objects.last()  # TODO: correct logic
+    return CSETerm.objects.get(pk=7)  # TODO: correct logic
 
 def get_prev_term():
-    return CSETerm.objects.get(pk=get_cur_term().pk - 1)  # TODO: correct logic
+    return CSETerm.objects.get(pk=4)  # TODO: correct logic
 
 
 
