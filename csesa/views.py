@@ -80,7 +80,7 @@ def graders_view(request, term_title):
                 CampaignPartyRelation.objects.filter(
                     type=CampaignPartyRelationType.GRADER,
                     campaign__course_data__term = the_term,
-                    status=CampaignPartyRelationStatus.APPROVED
+                    # status=CampaignPartyRelationStatus.APPROVED
                 ), many=True
             ).data,
             'courses': CampaignAsCourseSimpleSerializer(
