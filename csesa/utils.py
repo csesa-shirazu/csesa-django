@@ -111,6 +111,8 @@ def arabic_chars_to_persian(ar_str):
 def presian_chars_to_arabic(fa_str):
     return fa_str.replace('ک', 'ك').replace('ی', 'ي')
 
+def presian_chars_to_arabic_only_y(fa_str):
+    return fa_str.replace('ی', 'ي')
 
 def get_user_profile_names():
     for user in User.objects.all():
@@ -200,8 +202,8 @@ def read_course_data(file_name, cse_term, read_students):
             teacher_first_name = teachers_string_arr[i + 1]
             teacher_last_name = teachers_string_arr[i]
             teachers_qs = User.objects.filter(
-                first_name__in = [teacher_first_name, presian_chars_to_arabic(teacher_first_name)],
-                last_name__in = [teacher_last_name, presian_chars_to_arabic(teacher_last_name)],
+                first_name__in = [teacher_first_name, presian_chars_to_arabic_only_y(teacher_first_name), presian_chars_to_arabic(teacher_first_name)],
+                last_name__in = [teacher_last_name, presian_chars_to_arabic_only_y(teacher_last_name), presian_chars_to_arabic(teacher_last_name)],
             )
             if teachers_qs.exists():
                 teacher = teachers_qs.first()
@@ -232,7 +234,7 @@ def read_course_data(file_name, cse_term, read_students):
                 last_name =  s['family_name'].strip()
                 p = None
                 try:
-                    p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name), first_name], user__last_name__in=[presian_chars_to_arabic(last_name), last_name])
+                    p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name), presian_chars_to_arabic_only_y(first_name), first_name], user__last_name__in=[presian_chars_to_arabic(last_name), presian_chars_to_arabic_only_y(last_name), last_name])
                 except Profile.DoesNotExist:
                     username = rand_string()
                     while User.objects.filter(username=username).exists():
