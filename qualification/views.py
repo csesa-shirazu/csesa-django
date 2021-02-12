@@ -26,7 +26,7 @@ class qualification_view(View):
                         object_id=the_profile.id,
                         type=CampaignPartyRelationType.STUDENT
                     ),
-                    course_data__term=CSETerm.objects.get(title="2-98") #hardcoded
+                    course_data__term=get_prev_term()
                 ),
                 many=True
             ).data,
