@@ -12,6 +12,7 @@ from qualification.serializers import QualificationFormSerializer
 from users.models import Profile
 
 from django.contrib.auth.models import User
+from csesa.utils import arabic_chars_to_persian, get_prev_term, get_cur_term
 
 class qualification_view(View):
     template_name = 'grader-qualification.html'
