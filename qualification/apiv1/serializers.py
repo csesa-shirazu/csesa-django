@@ -12,10 +12,14 @@ class GraderQualifiactionPublicResult(ModelSerializer):
     course = SerializerMethodField()
     scores = SerializerMethodField()
     participant_count = SerializerMethodField()
+    grader_profile = SerializerMethodField()
 
     class Meta:
         model = CampaignPartyRelation
         fields = [
+            'pk',
+            'status',
+            'grader_profile',
             'course',
             'scores',
             'participant_count'
@@ -64,3 +68,10 @@ class GraderQualifiactionPublicResult(ModelSerializer):
 
     def get_participant_count(self, obj):
         return Qualification.objects.filter(dst=obj).count()
+
+    def get_grader_profile(self, obj):
+        return {
+            'id': obj.object_id,
+            'first_name': obj.content_object.first_name,
+            'last_name': obj.content_object.last_name,
+        }

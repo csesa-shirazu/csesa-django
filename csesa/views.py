@@ -18,6 +18,7 @@ from csecourses.models import CSECourseGroupTerm, CSECourseGroup, CSETerm
 from csesa.permissions import IsOwnerOfCampaignPartyRelationOrReadOnly
 from csesa.serializers import GraderOfCourseRelationSerializer
 from csesa.utils import arabic_chars_to_persian, get_prev_term, get_cur_term
+from qualification.apiv1.serializers import GraderQualifiactionPublicResult
 from users.models import User, Profile
 from users.serializers import ProfileRetrieveSimpleSerializer
 
@@ -136,7 +137,7 @@ class CourseGroupTAsAPIView(APIView):
             course_group = CSECourseGroup.objects.get(pk=pk)
         except:
             raise Http404
-        print(pk)
+        # print(pk)
 
         try:
             course_data = CSECourseGroupTerm.objects.get(
@@ -196,7 +197,11 @@ class CourseGroupTAsAPIView(APIView):
                     'is_teacher': is_teacher
                 }, many=True).data
 
-
+        all_terms = GraderQualifiactionPublicResult(CampaignPartyRelation.objects.filter(
+            campaign__course_data__course_group=course_group,
+            type=CampaignPartyRelationType.GRADER,
+            # dst_qualifications__isnull=False
+        ).distinct(), many=True).data
         data = {
             'course_group': {
                 'id': course_group.id,
@@ -204,7 +209,8 @@ class CourseGroupTAsAPIView(APIView):
             },
             'prev_term_graders': prev_term_graders,
             'cur_term_graders': cur_term_graders,
-            'is_teacher': is_teacher
+            'is_teacher': is_teacher,
+            'all_terms': all_terms,
         }
 
         return Response(data)
