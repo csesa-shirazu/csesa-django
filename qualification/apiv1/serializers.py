@@ -1,3 +1,4 @@
+from enumfields.drf import EnumSupportSerializerMixin
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import (
     ModelSerializer
@@ -8,7 +9,7 @@ from csecourses.models import CSECourseGroup
 from qualification.models import Qualification, QuestionType, QualificationForm, QA
 
 
-class GraderQualifiactionPublicResult(ModelSerializer):
+class GraderQualifiactionPublicResult(EnumSupportSerializerMixin, ModelSerializer):
     course = SerializerMethodField()
     scores = SerializerMethodField()
     participant_count = SerializerMethodField()
