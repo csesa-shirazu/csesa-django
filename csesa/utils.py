@@ -141,7 +141,7 @@ def get_cur_term():
 
 def get_prev_term():
     terms = CSETerm.objects.all()
-    return terms[len(terms) - 2]  # TODO: correct logic
+    return terms[len(terms) - 1]  # TODO: correct logic
 
 
 
@@ -230,8 +230,8 @@ def read_course_data(file_name, cse_term, read_students):
 
         if read_students:
             for s in f[x]['students']:
-                first_name = s['first_name'].strip()
-                last_name =  s['family_name'].strip()
+                first_name = s[0].strip()
+                last_name =  s[1].strip()
                 p = None
                 try:
                     p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name), presian_chars_to_arabic_only_y(first_name), first_name], user__last_name__in=[presian_chars_to_arabic(last_name), presian_chars_to_arabic_only_y(last_name), last_name])
@@ -239,10 +239,10 @@ def read_course_data(file_name, cse_term, read_students):
                     username = rand_string()
                     while User.objects.filter(username=username).exists():
                         username = rand_string()
-                    u = User.objects.create(username=username, first_name=s['first_name'].strip(), last_name=s['family_name'].strip())
+                    u = User.objects.create(username=username, first_name=first_name, last_name=last_name.strip())
                     p = u.profile.first()
                 except:
-                    print(s['first_name'] + ' ' + s['family_name'])
+                    print(first_name + ' ' + last_name)
                     continue
                 if (not CampaignPartyRelation.objects.filter(
                         campaign=the_campaign,
@@ -256,3 +256,17 @@ def read_course_data(file_name, cse_term, read_students):
                         type=CampaignPartyRelationType.STUDENT,
                         status=CampaignPartyRelationStatus.APPROVED
                     )
+
+def read_new_stds(stds):
+    """
+        stds is like اصغري,اصغر,4003333\n.....
+    """
+    x = ""
+    for std in stds.split("\n"):
+        stdd = std.split(',')
+        u = User.objects.create(last_name=stdd[0], first_name=stdd[1], username=stdd[2])
+        pss = rand_string()
+        u.set_password(pss)
+        u.save()
+        x += stdd[2] + '\n' + pss + '\n'
+    print(x)
