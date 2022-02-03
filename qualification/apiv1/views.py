@@ -6,7 +6,7 @@ from rest_framework.permissions import (
     AllowAny,
 )
 
-from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType
+from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, CampaignPartyRelationStatus
 from qualification.models import Qualification
 from .serializers import (
     GraderQualifiactionPublicResult
@@ -26,6 +26,7 @@ class QualifiactionResultAPIView(ListAPIView):
         queryset_list = CampaignPartyRelation.objects.filter(
             campaign_relations_profiles=profile,
             type=CampaignPartyRelationType.GRADER,
+            status=CampaignPartyRelationStatus.APPROVED,
             # dst_qualifications__isnull=False
         ).distinct()
 
