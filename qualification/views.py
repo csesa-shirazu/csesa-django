@@ -12,7 +12,8 @@ from qualification.serializers import QualificationFormSerializer
 from users.models import Profile
 
 from django.contrib.auth.models import User
-from csesa.utils import arabic_chars_to_persian, get_prev_term, get_cur_term
+from csesa.utils import arabic_chars_to_persian, get_prev_term, get_cur_term, get_term_for_qualification
+
 
 class qualification_view(View):
     template_name = 'grader-qualification.html'
@@ -27,7 +28,7 @@ class qualification_view(View):
                         object_id=the_profile.id,
                         type=CampaignPartyRelationType.STUDENT
                     ),
-                    course_data__term=get_prev_term()
+                    course_data__term=get_term_for_qualification()
                 ),
                 many=True
             ).data,

@@ -108,11 +108,14 @@ def read_courses(stdno):
 def arabic_chars_to_persian(ar_str):
     return ar_str.replace('ك', 'ک').replace('ي', 'ی')
 
+
 def presian_chars_to_arabic(fa_str):
     return fa_str.replace('ک', 'ك').replace('ی', 'ي')
 
+
 def presian_chars_to_arabic_only_y(fa_str):
     return fa_str.replace('ی', 'ي')
+
 
 def get_user_profile_names():
     for user in User.objects.all():
@@ -139,10 +142,14 @@ def set_teacher_campaign_relations():
 def get_cur_term():
     return CSETerm.objects.last()  # TODO: correct logic
 
+
 def get_prev_term():
     terms = CSETerm.objects.all()
     return terms[len(terms) - 2]  # TODO: correct logic
 
+
+def get_term_for_qualification():
+    return CSETerm.objects.last()  # TODO: correct logic
 
 
 def read_course_data(file_name, cse_term, read_students):
@@ -202,8 +209,10 @@ def read_course_data(file_name, cse_term, read_students):
             teacher_first_name = teachers_string_arr[i + 1]
             teacher_last_name = teachers_string_arr[i]
             teachers_qs = User.objects.filter(
-                first_name__in = [teacher_first_name, presian_chars_to_arabic_only_y(teacher_first_name), presian_chars_to_arabic(teacher_first_name)],
-                last_name__in = [teacher_last_name, presian_chars_to_arabic_only_y(teacher_last_name), presian_chars_to_arabic(teacher_last_name)],
+                first_name__in=[teacher_first_name, presian_chars_to_arabic_only_y(teacher_first_name),
+                                presian_chars_to_arabic(teacher_first_name)],
+                last_name__in=[teacher_last_name, presian_chars_to_arabic_only_y(teacher_last_name),
+                               presian_chars_to_arabic(teacher_last_name)],
             )
             if teachers_qs.exists():
                 teacher = teachers_qs.first()
@@ -231,10 +240,14 @@ def read_course_data(file_name, cse_term, read_students):
         if read_students:
             for s in f[x]['students']:
                 first_name = s[0].strip()
-                last_name =  s[1].strip()
+                last_name = s[1].strip()
                 p = None
                 try:
-                    p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name), presian_chars_to_arabic_only_y(first_name), first_name], user__last_name__in=[presian_chars_to_arabic(last_name), presian_chars_to_arabic_only_y(last_name), last_name])
+                    p = Profile.objects.get(user__first_name__in=[presian_chars_to_arabic(first_name),
+                                                                  presian_chars_to_arabic_only_y(first_name),
+                                                                  first_name],
+                                            user__last_name__in=[presian_chars_to_arabic(last_name),
+                                                                 presian_chars_to_arabic_only_y(last_name), last_name])
                 except Profile.DoesNotExist:
                     username = rand_string()
                     while User.objects.filter(username=username).exists():
@@ -256,6 +269,7 @@ def read_course_data(file_name, cse_term, read_students):
                         type=CampaignPartyRelationType.STUDENT,
                         status=CampaignPartyRelationStatus.APPROVED
                     )
+
 
 def read_new_stds(stds):
     """
