@@ -33,6 +33,7 @@ class CSETermSerializer(EnumSupportSerializerMixin, ModelSerializer):
     class Meta:
         model = CSETerm
         fields = [
+            'pk',
             'title',
             'start',
             'end'

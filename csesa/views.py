@@ -15,6 +15,7 @@ from campaigns.models import CampaignPartyRelation, CampaignPartyRelationType, C
 from campaigns.serializers import GraderRelationSerializer, CampaignAsCourseSimpleSerializer, \
     CampaignGraderyRequestSerializer
 from csecourses.models import CSECourseGroupTerm, CSECourseGroup, CSETerm
+from csecourses.serializers import CSETermSerializer
 from csesa.permissions import IsOwnerOfCampaignPartyRelationOrReadOnly
 from csesa.serializers import GraderOfCourseRelationSerializer
 from csesa.utils import arabic_chars_to_persian, get_prev_term, get_cur_term
@@ -139,10 +140,11 @@ class CourseGroupTAsAPIView(APIView):
             raise Http404
         # print(pk)
 
+        prev_term = get_prev_term()
         try:
             course_data = CSECourseGroupTerm.objects.get(
                 course_group=course_group,
-                term=get_prev_term()
+                term=prev_term
             )
             prev_campaign = Campaign.objects.get(course_data=course_data)
         except:
@@ -169,10 +171,11 @@ class CourseGroupTAsAPIView(APIView):
                 }
                 , many=True).data
 
+        cur_term = get_cur_term()
         try:
             course_data = CSECourseGroupTerm.objects.get(
                 course_group=course_group,
-                term=get_cur_term()
+                term=cur_term
             )
             cur_campaign = Campaign.objects.get(course_data=course_data)
         except:
@@ -207,6 +210,8 @@ class CourseGroupTAsAPIView(APIView):
                 'id': course_group.id,
                 'title_fa': arabic_chars_to_persian(str(course_group)),
             },
+            'prev_term': CSETermSerializer(prev_term).data,
+            'cur_term': CSETermSerializer(cur_term).data,
             'prev_term_graders': prev_term_graders,
             'cur_term_graders': cur_term_graders,
             'is_teacher': is_teacher,
@@ -248,7 +253,7 @@ class GraderyRequestAPIView(CreateAPIView):
             object_id=profile.id,
             type=CampaignPartyRelationType.GRADER,
         )
-        if (cpr_qs.exists()):
+        if cpr_qs.exists():
             grader_cpr = cpr_qs.first()
             if grader_cpr.status == CampaignPartyRelationStatus.PENDING:
                 print("hello")
