@@ -141,7 +141,7 @@ def get_cur_term():
 
 def get_prev_term():
     terms = CSETerm.objects.all()
-    return terms[len(terms) - 1]  # TODO: correct logic
+    return terms[len(terms) - 2]  # TODO: correct logic
 
 
 
